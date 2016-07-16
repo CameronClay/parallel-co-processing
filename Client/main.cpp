@@ -1,6 +1,8 @@
-#include "Includes.h"
-#include "TCPClientInterface.h"
+#include <Includes.h>
+#include <TCPClientInterface.h>
+#include <CmdParser.h>
 
+#include <stdio.h>
 #include <assert.h>
 #include <tchar.h>
 #include <Windows.h>
@@ -34,7 +36,7 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	return TRUE;
 }
 
-void MsgHandler(TCPClientInterface&, MsgStreamReader streamReader)
+void MsgHandler(TCPClientInterface& client, MsgStreamReader streamReader)
 {
 
 }
@@ -46,8 +48,15 @@ void DisconnectHandler(TCPClientInterface& client, bool unexpected)
 
 int _tmain(int argc, TCHAR** argv)
 {
+	TCHAR buffer[512] = {};
+	CmdParser cmdParser;
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
 	client = CreateClient(MsgHandler, DisconnectHandler);
+	do
+	{
+		_getts_s(buffer, 512);
+		cmdParser.ParseCmd(buffer);
+	} while (!cmdParser.CmdComp(_T("exit")));
 
 	DestroyClient(client);
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));

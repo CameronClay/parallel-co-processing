@@ -1,6 +1,8 @@
-#include "Includes.h"
-#include "TCPServInterface.h"
+#include <Includes.h>
+#include <TCPServInterface.h>
+#include <CmdParser.h>
 
+#include <stdio.h>
 #include <assert.h>
 #include <tchar.h>
 #include <Windows.h>
@@ -51,9 +53,15 @@ void ConnectHandler(TCPServInterface& serv, ClientData* data)
 
 int _tmain(int argc, TCHAR** argv)
 {
+	TCHAR buffer[512] = {};
+	CmdParser cmdParser;
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
 	serv = CreateServer(MsgHandler, ConnectHandler, DisconnectHandler);
-
+	do
+	{
+		_getts_s(buffer, 512);
+		cmdParser.ParseCmd(buffer);
+	} while (!cmdParser.CmdComp(_T("exit")));
 	DestroyServer(serv);
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
 	return 0;
