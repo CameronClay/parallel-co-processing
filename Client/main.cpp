@@ -1,6 +1,8 @@
 #include <Includes.h>
 #include <TCPClientInterface.h>
 #include <CmdParser.h>
+#include <CmdHandler.h>
+#include "ClientCmdParser.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -29,6 +31,7 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	case CTRL_LOGOFF_EVENT:
 	case CTRL_SHUTDOWN_EVENT:
 		DestroyClient(client);
+		CleanupNetworking();
 		break;
 	default:
 		return FALSE;
@@ -48,17 +51,24 @@ void DisconnectHandler(TCPClientInterface& client, bool unexpected)
 
 int _tmain(int argc, TCHAR** argv)
 {
+	InitializeNetworking();
+
 	TCHAR buffer[512] = {};
-	CmdParser cmdParser;
+	CmdHandler cmdHandler;
+	cmdHandler.AddCmd<ConnectParser>(_T("connect"), std::ref(client));
+	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), std::ref(client));
+
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
+
 	client = CreateClient(MsgHandler, DisconnectHandler);
 	do
 	{
+		_tprintf(_T("Client> "));
 		_getts_s(buffer, 512);
-		cmdParser.ParseCmd(buffer);
-	} while (!cmdParser.CmdComp(_T("exit")));
+	} while (cmdHandler.Process(buffer));
 
 	DestroyClient(client);
+	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
 	return 0;
 }

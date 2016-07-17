@@ -17,7 +17,7 @@ public:
 
 	void ParseCmd(TCHAR* str);
 
-	TCHAR* GetCmd() const;
+	const TCHAR* GetCmd() const;
 	const std::vector<ParamData>& GetArgs() const;
 	size_t ParamCount() const;
 	bool IsSet(const TCHAR* argv) const;

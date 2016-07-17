@@ -16,26 +16,33 @@ void CmdParser::ParseCmd(TCHAR* str)
 	cmd = nullptr;
 	args.clear();
 
-	TCHAR* c = (TCHAR*)str;
-	for (; *c != _T('\0'); ++c)
+	for (TCHAR* c = (TCHAR*)str; *c != _T('\0'); ++c)
 	{
-		if (*c == _T('-'))
+		if (cmd && *c == _T('-'))
 		{
-			//if not storing params
-			if (!cmd)
+			//cutoff '-'
+			args.emplace_back(c + 1);
+			++c;
+		}
+		else
+		{
+			if (cmd)
 			{
-				c[-1] = _T('\0');
+				if (*c == _T(' '))
+				{
+					*c = '\0';
+				}
+				else if (*c == _T('='))
+				{
+					*c = '\0';
+					args.back().data = c + 1;
+				}
+			}
+			else if(*c == _T(' '))
+			{
+				*c = _T('\0');
 				cmd = str;
 			}
-			//if storing params
-			else if (c - 3 != args.back().param)
-			{
-				c[-1] = _T('\0');
-				args.back().data = c - 2;
-			}
-			c[2] = _T('\0');
-			args.emplace_back(c);
-			++c;
 		}
 	}
 
@@ -44,14 +51,9 @@ void CmdParser::ParseCmd(TCHAR* str)
 		//store command if no parameters present
 		cmd = str;
 	}
-	else if (c > args.back().param)
-	{
-		//store last argument data if applicable
-		args.back().data = args.back().param + 3;
-	}
 }
 
-TCHAR* CmdParser::GetCmd() const
+const TCHAR* CmdParser::GetCmd() const
 {
 	return cmd;
 }
@@ -70,6 +72,7 @@ bool CmdParser::IsSet(const TCHAR* argv) const
 		if (_tcscmp(it.param, argv) == 0)
 			return true;
 	}
+	return false;
 }
 bool CmdParser::CmdComp(const TCHAR* str) const
 {
