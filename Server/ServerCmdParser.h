@@ -11,7 +11,7 @@ public:
 		:
 		ParamParser({ { _T("p"), true }, { _T("ipv"), false }, { _T("nt"), false }, { _T("nct"), false }, { _T("nca"), false } }, { this, &AllowConnParser::Execute, std::forward<ExecuteArgs>(args)... })
 	{}
-public:
+private:
 	void DefaultParams()
 	{
 		port = nullptr;
@@ -54,7 +54,7 @@ public:
 	}
 	void Usage()
 	{
-		_tprintf(_T("Usage: -p=Port [-ipv=ipv4/ipv6/ipboth[ipv4] -nt=nt[8] -nct=nct[4] -nca=nca[4]]\n"));
+		_tprintf(_T("Usage: -p=Port [-ipv=ipv4/ipv6/ipboth[ipv4] -nt=nThreads[8] -nct=nConcurrentThreads[4] -nca=nConcurrentAccepts[4]]\n"));
 	}
 	void Execute(TCPServInterface* serv)
 	{
