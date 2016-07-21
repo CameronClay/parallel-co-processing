@@ -1,0 +1,5 @@
+#pragma once
+
+#define TYPE_FILETRANSFER 0
+#define MSG_FILETRANSFER_SEND 0
+#define MSG_FILETRANSFER_ABORTED 1

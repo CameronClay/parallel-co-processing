@@ -50,6 +50,7 @@ private:
 		{
 			nConcAccepts = std::stoull(param.data);
 		}
+
 		return true;
 	}
 	void Usage()

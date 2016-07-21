@@ -35,11 +35,12 @@ private:
 		}
 		else if (_tcscmp(param.param, _T("t")) == 0)
 			timeout = std::stof(param.data);
+
 		return true;
 	}
 	void Usage()
 	{
-		_tprintf(_T("Usage: -ip=IP address -p=port -ipv6=true/false[false] [-t=timemilli[5.0]]\n"));
+		_tprintf(_T("Usage: -ip=IP address -p=port -ipv6=true/false[false] [-t=timesec[5.0]]\n"));
 	}
 	void Execute(TCPClientInterface* clint)
 	{
