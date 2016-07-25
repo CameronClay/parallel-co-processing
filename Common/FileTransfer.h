@@ -11,12 +11,14 @@
 class FileSend
 {
 public:
-	FileSend();
+	FileSend(TCPServInterface& serv);
 	~FileSend();
 
-	void SendFiles(TCPServInterface* serv, ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
+	void Initialize();
+
+	void SendFiles(ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
 	void Wait();
-	void SendFilesAndWait(TCPServInterface* serv, ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
+	void SendFilesAndWait(ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
 	void StopSend();
 private:
 	enum ThreadState
@@ -25,14 +27,14 @@ private:
 		ABORTING,
 		EXITING
 	};
-	friend static void SendThread(FileSend& fileSend);
+	void SendThread();
 
-	TCPServInterface* serv;
+	TCPServInterface& serv;
 	ClientData* clint;
 	std::vector<FileMisc::FileData> fileList;
-	std::thread thread;
 	EventAutoReset startEv, finishedEv;
 	ThreadState threadState;
+	std::thread thread;
 };
 
 class FileReceive

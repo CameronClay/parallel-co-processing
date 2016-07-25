@@ -3,69 +3,69 @@
 #include "StreamExt2.h"
 #include "MessagesExt.h"
 
-void SendThread(FileSend& fileSend)
+void FileSend::SendThread()
 {
-	while (true)
+	while (threadState != FileSend::EXITING)
 	{
-		TCPServInterface* serv = fileSend.serv;
+		startEv.Wait();
 
-		fileSend.startEv.Wait();
-
-		if (fileSend.threadState == FileSend::RUNNING)
+		bool entered = false;
+		if (threadState == FileSend::RUNNING)
 		{
-			auto strm = serv->CreateOutStream(StreamWriter::SizeType(fileSend.fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
-			strm.Write(fileSend.fileList);
-			serv->SendClientData(strm, fileSend.clint, true);
+			entered = true;
+			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
+			strm.Write(fileList);
+			serv.SendClientData(strm, clint, true);
 
-			if (fileSend.threadState == FileSend::RUNNING)
+			if (threadState == FileSend::RUNNING)
 			{
-				const UINT maxBuffSize = serv->GetBufferOptions().GetMaxDataBuffSize();
-				for (auto& it : fileSend.fileList)
+				const UINT maxBuffSize = serv.GetBufferOptions().GetMaxDataBuffSize();
+				for (auto& it : fileList)
 				{
 					File file(it.fileName.c_str(), GENERIC_READ);
 					DWORD64 totalRead = 0;
 
-					while ((fileSend.threadState == FileSend::RUNNING) && (totalRead < it.size))
+					while ((threadState == FileSend::RUNNING) && (totalRead < it.size))
 					{
-						auto sndBuff = serv->GetSendBuffer(maxBuffSize);
+						auto sndBuff = serv.GetSendBuffer(maxBuffSize);
 						*(short*)(sndBuff.buffer) = TYPE_FILETRANSFER;
 						*(short*)(sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
 
 						DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize);
-						serv->SendClientData(sndBuff, read, fileSend.clint, true);
+						serv.SendClientData(sndBuff, read, clint, true);
 						totalRead += read;
 					}
 				}
 			}
 		}
 
-		if (fileSend.threadState == FileSend::EXITING)
-		{
-			serv->SendMsg(fileSend.clint, true, TYPE_FILETRANSFER, MSG_FILETRANSFER_ABORTED);
-			fileSend.finishedEv.Set();
-			return;
-		}
+		if (entered && (threadState == FileSend::ABORTING))
+			serv.SendMsg(clint, true, TYPE_FILETRANSFER, MSG_FILETRANSFER_ABORTED);
 
-		fileSend.finishedEv.Set();
+		finishedEv.Set();
 	}
 }
 
-FileSend::FileSend()
+FileSend::FileSend(TCPServInterface& serv)
 	:
-	thread(SendThread, std::ref(*this)),
+	serv(serv),
 	threadState(RUNNING)
-{}
-FileSend::~FileSend()
 {
+	finishedEv.Set();
+}
+FileSend::~FileSend()
+{}
 
+void FileSend::Initialize()
+{
+	thread = std::thread(&FileSend::SendThread, this);
 }
 
-void FileSend::SendFiles(TCPServInterface* serv, ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
+void FileSend::SendFiles(ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
 {
 	if (fileList.empty())
 		return;
 
-	this->serv = serv;
 	this->clint = clint;
 	this->fileList = fileList;
 	threadState = RUNNING;
@@ -77,9 +77,9 @@ void FileSend::Wait()
 	finishedEv.Wait();
 }
 
-void FileSend::SendFilesAndWait(TCPServInterface* serv, ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
+void FileSend::SendFilesAndWait(ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
 {
-	SendFiles(serv, clint, fileList);
+	SendFiles(clint, fileList);
 	Wait();
 }
 
@@ -91,13 +91,10 @@ void FileSend::StopSend()
 
 
 FileReceive::FileReceive()
-{
+{}
 
-}
 FileReceive::~FileReceive()
-{
-
-}
+{}
 
 bool FileReceive::ReadFiles(MsgStreamReader& streamReader)
 {

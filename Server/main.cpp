@@ -2,7 +2,9 @@
 #include <TCPServInterface.h>
 #include <CmdParser.h>
 #include <CmdHandler.h>
+#include <FileTransfer.h>
 #include "ServerCmdParser.h"
+#include "Server.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -17,14 +19,9 @@
 
 static const WCHAR PORT[] = L"985";
 
-TCPServInterface* serv = nullptr;
-
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);
+void OnExit();
 int _tmain(int argc, TCHAR** argv);
-
-void MsgHandler(TCPServInterface& serv, ClientData* const clint, MsgStreamReader streamReader);
-void DisconnectHandler(TCPServInterface& serv, ClientData* data, bool unexpected);
-void ConnectHandler(TCPServInterface& serv, ClientData* data);
 
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 {
@@ -36,8 +33,8 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	case CTRL_CLOSE_EVENT:
 	case CTRL_LOGOFF_EVENT:
 	case CTRL_SHUTDOWN_EVENT:
-		DestroyServer(serv);
-		CleanupNetworking();
+		//DestroyServer(serv);
+		//CleanupNetworking();
 		break;
 	default:
 		return FALSE;
@@ -45,32 +42,24 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	return TRUE;
 }
 
-void MsgHandler(TCPServInterface& serv, ClientData* const clint, MsgStreamReader streamReader)
+void OnExit()
 {
-
-}
-
-void DisconnectHandler(TCPServInterface& serv, ClientData* data, bool unexpected)
-{
-
-}
-
-void ConnectHandler(TCPServInterface& serv, ClientData* data)
-{
-
+	CleanupNetworking();
 }
 
 int _tmain(int argc, TCHAR** argv)
 {
 	InitializeNetworking();
 
+	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
+	atexit(OnExit);
+
+	Server server;
+
 	TCHAR buffer[512] = {};
 	CmdHandler cmdHandler;
-	cmdHandler.AddCmd<AllowConnParser>(_T("allowcon"), std::ref(serv));
-	cmdHandler.AddCmd<ShutdownParser>(_T("shutdown"), std::ref(serv));
-
-	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
-	serv = CreateServer(MsgHandler, ConnectHandler, DisconnectHandler);
+	cmdHandler.AddCmd<AllowConnParser>(_T("allowcon"), server.GetTCPServ());
+	cmdHandler.AddCmd<ShutdownParser>(_T("shutdown"), server.GetTCPServ());
 
 	do
 	{
@@ -78,7 +67,6 @@ int _tmain(int argc, TCHAR** argv)
 		_getts_s(buffer, 512);
 	} while (cmdHandler.Process(buffer));
 
-	DestroyServer(serv);
 	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
 	return 0;
