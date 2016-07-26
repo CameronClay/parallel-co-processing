@@ -17,12 +17,11 @@ public:
 
 	void AddClient(ClientData* clint);
 	void RemoveClient(ClientData* clint);
-	void EvaluateClient(ClientData* clint, float time);
-private:
-	ClientData* FindClientForWork();
+	bool EvaluateClient(ClientData* clint, float time);
 
+	ClientData* FindClientForWork();
+private:
 	boost::lockfree::queue<ClientData*, boost::lockfree::fixed_sized<true>> fastClients, otherClients;
-	float acceptedTime;
 
 	//no sync needed because ConnectHandler and DisconnectHandler are synced
 	MemPool<> timePool;

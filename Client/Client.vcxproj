@@ -70,23 +70,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
-    <SourcePath>../Common/CNLIB;../Common;$(SourcePath)</SourcePath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
-    <SourcePath>../Common/CNLIB;../Common;$(SourcePath)</SourcePath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
-    <SourcePath>../Common/CNLIB;../Common;$(SourcePath)</SourcePath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
-    <SourcePath>../Common/CNLIB;../Common;$(SourcePath)</SourcePath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,6 +133,7 @@
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileTransfer.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
+    <ClCompile Include="..\Common\WaitableTimer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +146,7 @@
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
     <ClInclude Include="..\Common\StreamExt2.h" />
+    <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientCmdParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -70,19 +70,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>../Common/CNLIB;../Common;$(IncludePath)</IncludePath>
-    <LibraryPath>../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);../Common/CNLIB;../Common;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,19 +133,25 @@
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileTransfer.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
+    <ClCompile Include="..\Common\WaitableTimer.cpp" />
     <ClCompile Include="ClientQueue.cpp" />
+    <ClCompile Include="ClientWorkMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdHandler.h" />
     <ClInclude Include="..\Common\CmdParser.h" />
+    <ClInclude Include="..\Common\DataInterp.h" />
     <ClInclude Include="..\Common\Event.h" />
     <ClInclude Include="..\Common\FileTransfer.h" />
     <ClInclude Include="..\Common\Function.h" />
+    <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
+    <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientQueue.h" />
+    <ClInclude Include="ClientWorkMap.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerCmdParser.h" />
   </ItemGroup>

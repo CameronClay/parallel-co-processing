@@ -31,7 +31,7 @@ void FileSend::SendThread()
 						*(short*)(sndBuff.buffer) = TYPE_FILETRANSFER;
 						*(short*)(sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
 
-						DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize);
+						DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
 						serv.SendClientData(sndBuff, read, clint, true);
 						totalRead += read;
 					}

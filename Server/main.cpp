@@ -17,6 +17,8 @@
 #pragma comment(lib, "x64/TCPCS")
 #endif
 
+#pragma comment(lib, "DataInterp")
+
 static const WCHAR PORT[] = L"985";
 
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);

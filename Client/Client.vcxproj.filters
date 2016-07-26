@@ -36,6 +36,9 @@
     <ClCompile Include="..\Common\FileTransfer.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\WaitableTimer.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdParser.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\FileTransfer.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\WaitableTimer.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>

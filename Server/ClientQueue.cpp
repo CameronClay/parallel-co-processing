@@ -1,13 +1,12 @@
 #include "ClientQueue.h"
+#include <DataInterp.h>
 
 ClientQueue::ClientQueue(uint32_t maxClients)
 	:
 	fastClients(maxClients),
 	otherClients(maxClients),
 	timePool(sizeof(TimePoint), maxClients)
-{
-	//load acceptedTime from dll
-}
+{}
 
 ClientQueue::~ClientQueue()
 {}
@@ -23,16 +22,17 @@ void ClientQueue::RemoveClient(ClientData* clint)
 	timePool.destruct<TimePoint>((TimePoint*&)clint->obj);
 }
 
-void ClientQueue::EvaluateClient(ClientData* clint, float time)
+bool ClientQueue::EvaluateClient(ClientData* clint, float time)
 {
-	/*if (time <= ...)
-	{
-	serv.fastClients.push(clint);
-	}
+	if (time > DataInterp::MAXTIME)
+		return false;
+
+	if (time <= DataInterp::ACCEPTEDTIME)
+		fastClients.push(clint);
 	else
-	{
-	serv.otherClients.push(clint);
-	}*/
+		otherClients.push(clint);
+
+	return true;
 }
 
 ClientData* ClientQueue::FindClientForWork()

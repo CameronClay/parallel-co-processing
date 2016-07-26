@@ -1,18 +1,33 @@
-#include <stdint.h>
+#include <DataInterp.h>
+#include "Data.h"
 
-__declspec(dllexport) const float ACCEPTEDTIME = 500.0f;
+#ifdef _X86_
+#pragma comment(lib, "x32/TCPCS")
+#else
+#pragma comment(lib, "x64/TCPCS")
+#endif
 
-extern "C" __declspec(dllexport) void LoadData()
+Data data;
+
+const SERVDLL float DataInterp::ACCEPTEDTIME = 750.0f;
+const SERVDLL float DataInterp::MAXTIME = DataInterp::ACCEPTEDTIME * DataInterp::ACCEPTEDTIME;
+
+void DataInterp::LoadData(uint32_t expectedClientCount)
 {
-
+	data.LoadData(expectedClientCount);
 }
 
-extern "C" __declspec(dllexport) void BeginProcess(uint32_t expectedClientCount)
+uint32_t DataInterp::GetChunkSize()
 {
-
+	return data.GetChunkSize();
 }
 
-extern "C" __declspec(dllexport) uint32_t GetClientWork(void* out)
+uint32_t DataInterp::GetClientWork(void* out, uint32_t buffSize, unsigned long long& cursor)
 {
-	return 0;
+	return data.GetClientWork(out, buffSize, cursor);
+}
+
+uint32_t DataInterp::GetClientWorkPrev(void* out, uint32_t buffSize, unsigned long long cursor)
+{
+	return data.GetClientWorkPrev(out, buffSize, cursor);
 }
