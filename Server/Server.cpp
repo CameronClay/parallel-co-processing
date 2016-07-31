@@ -24,13 +24,19 @@ void Server::WorkThread()
 
 			DWORD64 cursor = 0;
 			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize);
+			if (wi.size)
+			{
+				workMap.Change(clint, wi);
 
-			workMap.Change(clint, wi);
-
-			if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
-				workMap.Remove(clint);
+				if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
+					workMap.Remove(clint);
+				else
+					*(TimePoint*)clint->obj = Clock::now();
+			}
 			else
-				*(TimePoint*)clint->obj = Clock::now();
+			{
+				tempFileMap.ReorderFileData();
+			}
 
 			if (exitThread.load(std::memory_order_acquire))
 				return;

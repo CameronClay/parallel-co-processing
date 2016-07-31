@@ -18,7 +18,7 @@ public:
 		FileMappingChunkRW(chunkSize)
 	{}
 
-	void CopyDataToFile()
+	void ReorderFileData()
 	{
 		char* p = nullptr;
 		uint64_t curPos = GetWritePos();

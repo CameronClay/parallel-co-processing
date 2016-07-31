@@ -25,24 +25,36 @@ public:
 		if (!writeBeg)
 			RemapWrite();
 
-		if (writeCur + size > writeEnd)
+		while (size)
 		{
-			const size_t intersection = writeCur + size - writeEnd;
-			memcpy(writeCur, t, intersection);
+			if (writeCur + size > writeEnd)
+			{
+				const size_t intersection = writeCur + size - writeEnd;
+				memcpy(writeCur, t, intersection);
 
-			RemapWrite();
+				writeCur += intersection;
+				t += intersection;
+				size -= intersection;
 
-			memcpy(writeCur, t, size - intersection);
-		}
-		else if (writeCur + size == writeEnd)
-		{
-			memcpy(writeCur, t, size);
-			RemapWrite();
-		}
-		else
-		{
-			memcpy(writeCur, t, size);
-			writeCur += size;
+				RemapWrite();
+
+				//memcpy(writeCur, t + intersection, size - intersection);
+				//writeCur += size - intersection;
+			}
+			else if (writeCur + size == writeEnd)
+			{
+				memcpy(writeCur, t, size);
+				RemapWrite();
+
+				size = 0;
+			}
+			else
+			{
+				memcpy(writeCur, t, size);
+
+				writeCur += size;
+				size = 0;
+			}
 		}
 	}
 
@@ -52,24 +64,33 @@ public:
 		if (!readBeg)
 			RemapRead();
 
-		if (readCur + size > readEnd)
+		while (size)
 		{
-			const size_t intersection = readCur + size - readEnd;
-			memcpy(t, readCur, intersection);
+			if (readCur + size > readEnd)
+			{
+				const size_t intersection = readCur + size - readEnd;
+				memcpy(t, readCur, intersection);
 
-			RemapRead();
+				readCur += intesection;
+				t += intersection;
+				size -= intersection;
 
-			memcpy(t, readCur, size - intersection);
-		}
-		else if (readCur + size == readEnd)
-		{
-			memcpy(t, readCur, size);
-			RemapRead();
-		}
-		else
-		{
-			memcpy(t, readCur, size);
-			readCur += size;
+				RemapRead();
+			}
+			else if (readCur + size == readEnd)
+			{
+				memcpy(t, readCur, size);
+				RemapRead();
+
+				size = 0;
+			}
+			else
+			{
+				memcpy(t, readCur, size);
+
+				readCur += size;
+				size = 0;
+			}
 		}
 	}
 
@@ -79,15 +100,41 @@ public:
 		if (!readBeg)
 			RemapRead();
 
-		if (readPos >= curPos && (readCur - readEnd) + readPos > curPos + size)
+		while (size)
 		{
-			memcpy(t, readBeg + (curPos - readPos), size);
-		}
-		else
-		{
-			char* temp = MapRandomAccess<char>(FILE_MAP_READ, curPos, size);
-			memcpy(t, temp, size);
-			Unmap(temp);
+			if (readPos >= curPos)
+			{
+				if (curPos + size > (readCur - readEnd) + readPos)
+				{
+					const size_t intersection = ((readCur - readEnd) + readPos) - (curPos + size);
+					memcpy(t, readBeg + (curPos - readPos), intersection);
+
+					t += intersection;
+					size -= intersection;
+					RemapRead();
+				}
+				else if (curPos + size == (readCur - readEnd) + readPos)
+				{
+					memcpy(t, readBeg + (curPos - readPos), size);
+					RemapRead();
+
+					size = 0;
+				}
+				else
+				{
+					memcpy(t, readBeg + (curPos - readPos), size);
+
+					size = 0;
+				}
+			}
+			else
+			{
+				char* temp = MapRandomAccess<char>(FILE_MAP_READ, curPos, size);
+				memcpy(t, temp, size);
+				Unmap(temp);
+
+				size = 0;
+			}
 		}
 	}
 
@@ -96,24 +143,33 @@ public:
 		if (!writeBeg)
 			RemapWrite();
 
-		if (writeCur + size > writeEnd)
+		while (size)
 		{
-			const size_t intersection = writeCur + size - writeEnd;
-			other.Read(writeCur, curReadPos, intersection);
+			if (writeCur + size > writeEnd)
+			{
+				const size_t intersection = writeCur + size - writeEnd;
+				other.Read(writeCur, curReadPos, intersection);
 
-			RemapWrite();
+				writeCur += intersection;
+				curReadPos += intersection;
+				size -= intersection;
 
-			other.Read(writeCur, curReadPos + intersection, size - intersection);
-		}
-		else if (writeCur + size == writeEnd)
-		{
-			other.Read(writeCur, curReadPos, size);
-			RemapWrite();
-		}
-		else
-		{
-			other.Read(writeCur, curReadPos, size);
-			writeCur += size;
+				RemapWrite();
+			}
+			else if (writeCur + size == writeEnd)
+			{
+				other.Read(writeCur, curReadPos, size);
+				RemapWrite();
+
+				size = 0;
+			}
+			else
+			{
+				other.Read(writeCur, curReadPos, size);
+
+				writeCur += size;
+				size = 0;
+			}
 		}
 	}
 
