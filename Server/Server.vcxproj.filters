@@ -48,6 +48,9 @@
     <ClCompile Include="..\Common\WaitableTimer.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\FileMapping.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdParser.h">
@@ -90,6 +93,18 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\WaitableTimer.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\FileMapping.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\FileMappingIndexed.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GlobOps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\FileMappingChunkRW.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>

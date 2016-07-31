@@ -7,24 +7,18 @@
 #include <TCPServInterface.h>
 #include <unordered_map>
 #include <mutex>
+#include <DataInterp.h>
 
 class ClientWorkMap
 {
 public:
-	struct Work
-	{
-		Work();
-		Work(size_t cursorPos, size_t dataSize);
-		size_t cursorPos, dataSize;
-	};
-
 	ClientWorkMap();
 
-	void Add(ClientData* clint, size_t cursorPos, size_t dataSize);
-	void Change(ClientData* clint, size_t cursorPos, size_t dataSize);
+	void Add(ClientData* clint, DWORD64 cursorPos, uint32_t dataSize, uint32_t dataIndex);
+	void Change(ClientData* clint, const WorkInfo& wi);
 	bool Remove(ClientData* clint);
-	bool GetClientWork(ClientData* clint, Work& work);
+	bool GetClientWork(ClientData* clint, WorkInfo& work);
 private:
-	std::unordered_map<ClientData*, Work> workMap;
+	std::unordered_map<ClientData*, WorkInfo> workMap;
 	std::mutex mutex;
 };

@@ -1,10 +1,12 @@
 #include "Data.h"
 
+
 Data::Data()
 	:
-	fileSize(std::numeric_limits<size_t>::max()),
-	chunkSize(std::numeric_limits<size_t>::max()),
-	cursorPos(0)
+	fileSize(0),
+	chunkSize(0),
+	cursorPos(0),
+	curIndex(0)
 {}
 
 void Data::LoadData(uint32_t expectedClientCount)
@@ -20,21 +22,29 @@ uint32_t Data::GetChunkSize() const
 	return chunkSize;
 }
 
-uint32_t Data::GetClientWork(void* buffer, uint32_t buffSize, DWORD64& cursor)
+WorkInfo Data::GetClientWork(void* buffer, uint32_t buffSize)
 {
 	if (buffSize < chunkSize)
-		return 0;
+		return{};
 
-	cursor = cursorPos;
-	const uint32_t read = file.Read(buffer, buffSize);
+	WorkInfo wi;
+
+	wi.cursor = cursorPos;
+	wi.curIndex = curIndex++;
+	const uint32_t read = wi.size = file.Read(buffer, buffSize);
 	cursorPos += read;
-	return read;
+	return wi;
 }
 
-uint32_t Data::GetClientWorkPrev(void* buffer, uint32_t buffSize, DWORD64 cursor)
+WorkInfo Data::GetClientWorkPrev(void* buffer, uint32_t buffSize, const WorkInfo& wi)
 {
-	file.MoveCursor(cursorPos - cursor);
+	file.MoveCursor(cursorPos - wi.cursor);
 	const uint32_t read = file.Read(buffer, buffSize);
-	file.MoveCursor(cursor - cursorPos);
-	return read;
+	file.MoveCursor(wi.cursor - cursorPos);
+	return wi;
+}
+
+DWORD64 Data::GetFileSize() const
+{
+	return fileSize;
 }

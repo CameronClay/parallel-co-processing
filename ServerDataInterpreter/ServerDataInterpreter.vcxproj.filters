@@ -77,5 +77,8 @@
     <ClInclude Include="..\Common\WaitableTimer.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\FileMappingChunkRW.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

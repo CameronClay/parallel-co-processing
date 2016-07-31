@@ -3,6 +3,8 @@
 #include <Includes.h>
 #include <TCPServInterface.h>
 #include <FileTransfer.h>
+#include <FileMappingIndexed.h>
+#include <MemPool.h>
 #include "ClientQueue.h"
 #include "ClientWorkMap.h"
 
@@ -27,6 +29,8 @@ private:
 	ClientQueue clntQueue;
 	ClientWorkMap workMap;
 	FileSend fileSend;
+	FileMappingIndexed tempFileMap;
+	MemPool<> timePool;
 	std::thread workThread;
 	std::atomic<bool> exitThread;
 };                   

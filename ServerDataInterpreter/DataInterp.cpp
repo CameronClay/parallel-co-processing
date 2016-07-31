@@ -17,17 +17,22 @@ void DataInterp::LoadData(uint32_t expectedClientCount)
 	data.LoadData(expectedClientCount);
 }
 
+unsigned long long DataInterp::GetFileSize()
+{
+	return data.GetFileSize();
+}
+
 uint32_t DataInterp::GetChunkSize()
 {
 	return data.GetChunkSize();
 }
 
-uint32_t DataInterp::GetClientWork(void* out, uint32_t buffSize, unsigned long long& cursor)
+WorkInfo DataInterp::GetClientWork(void* out, uint32_t buffSize)
 {
-	return data.GetClientWork(out, buffSize, cursor);
+	return data.GetClientWork(out, buffSize);
 }
 
-uint32_t DataInterp::GetClientWorkPrev(void* out, uint32_t buffSize, unsigned long long cursor)
+WorkInfo DataInterp::GetClientWorkPrev(void* out, uint32_t buffSize, const WorkInfo& wi)
 {
-	return data.GetClientWorkPrev(out, buffSize, cursor);
+	return data.GetClientWorkPrev(out, buffSize, wi);
 }

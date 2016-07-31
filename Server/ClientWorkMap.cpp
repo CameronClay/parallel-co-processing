@@ -1,39 +1,22 @@
 #include "ClientWorkMap.h"
 
-ClientWorkMap::Work::Work()
-	:
-	cursorPos(std::numeric_limits<size_t>::max()),
-	dataSize(std::numeric_limits<size_t>::max())
-{}
-
-ClientWorkMap::Work::Work(size_t cursorPos, size_t dataSize)
-	:
-	cursorPos(cursorPos),
-	dataSize(dataSize)
-{}
-
 ClientWorkMap::ClientWorkMap()
 {}
 
-void ClientWorkMap::Add(ClientData* clint, size_t cursorPos, size_t dataSize)
+void ClientWorkMap::Add(ClientData* clint, DWORD64 cursorPos, uint32_t dataSize, uint32_t dataIndex)
 {
 	std::lock_guard<std::mutex> lock{ mutex };
-	workMap.emplace(std::piecewise_construct, std::forward_as_tuple(clint), std::forward_as_tuple(cursorPos, dataSize));
+	workMap.emplace(std::piecewise_construct, std::forward_as_tuple(clint), std::forward_as_tuple(cursorPos, dataSize, dataIndex));
 }	
 
-void ClientWorkMap::Change(ClientData* clint, size_t cursorPos, size_t dataSize)
+void ClientWorkMap::Change(ClientData* clint, const WorkInfo& wi)
 {
 	std::lock_guard<std::mutex> lock{ mutex };
 	auto it = workMap.find(clint);
 	if (it != workMap.end())
-	{
-		it->second.cursorPos = cursorPos;
-		it->second.dataSize = dataSize;
-	}
+		it->second = wi;
 	else
-	{
-		workMap.emplace(std::piecewise_construct, std::forward_as_tuple(clint), std::forward_as_tuple(cursorPos, dataSize));
-	}
+		workMap.emplace(clint, wi);
 }
 
 bool ClientWorkMap::Remove(ClientData* clint)
@@ -42,7 +25,7 @@ bool ClientWorkMap::Remove(ClientData* clint)
 	return workMap.erase(clint);
 }
 
-bool ClientWorkMap::GetClientWork(ClientData* clint, Work& work)
+bool ClientWorkMap::GetClientWork(ClientData* clint, WorkInfo& work)
 {
 	std::lock_guard<std::mutex> lock{ mutex };
 	auto it = workMap.find(clint);
