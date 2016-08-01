@@ -15,16 +15,23 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 {
 	Client& clint = *(Client*)tcpClient.GetObj();
 	const short type = streamReader.GetType(), msg = streamReader.GetMsg();
+	const uint32_t inDataSize = streamReader.GetDataSize();
+	char* indata = streamReader.GetData();
+
 	switch (type)
 	{
 	case TYPE_FILETRANSFER:
 		switch (msg)
 		{
 		case MSG_FILETRANSFER_SEND:
-			clint.fileReceive.ReadFiles(streamReader);
+			if (clint.fileReceive.ReadFiles(streamReader))
+			{
+				_tprintf(_T("Algorithm received; ready to process..."));
+				tcpClient.SendMsg(TYPE_READY, MSG_READY_PROCESS);
+			}
 			break;
 		case MSG_FILETRANSFER_ABORTED:
-			//notify user in terminal
+			_tprintf(_T("File transfer has been aborted by server"));
 			break;
 		}
 		break;
@@ -32,10 +39,11 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 		switch (msg)
 		{
 		case MSG_WORK_NEW:
-			//notify user of workload?
-			uint32_t outSizeMax = Algorithm::GetOutSize(streamReader.GetDataSize());
+			_tprintf(_T("Work load of %d bytes now processing..."), inDataSize);
+
+			uint32_t outSizeMax = Algorithm::GetOutSize(inDataSize);
 			auto strm = tcpClient.CreateOutStream(outSizeMax, TYPE_WORK, MSG_WORK_COMPLETE);
-			Algorithm::AlgorithmInOut(streamReader.GetData(), streamReader.GetDataSize(), strm.GetData(), outSizeMax);
+			Algorithm::AlgorithmInOut(indata, inDataSize, strm.GetData(), outSizeMax);
 			tcpClient.SendServData(strm);
 			break;
 		}
@@ -44,7 +52,7 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 		switch (msg)
 		{
 		case MSG_KICK_TOOSLOW:
-			//notify user in terminal
+			_tprintf(_T("You have been remove from the server because you took too long to respond/process work request"));
 			break;
 		}
 		break;
@@ -54,5 +62,5 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 void DisconnectHandler(TCPClientInterface& tcpClient, bool unexpected)
 {
 	Client& clint = *(Client*)tcpClient.GetObj();
-	//notify user of disconnect
+	_tprintf(_T("You have lost connection to server"));
 }

@@ -8,7 +8,3 @@ void Algorithm::AlgorithmInOut(void* in, uint32_t inSize, void* out, uint32_t ou
 {
 
 }
-void Algorithm::AlgorithmIn(void* in, uint32_t inSize)
-{
-
-}
