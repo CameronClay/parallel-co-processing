@@ -135,9 +135,11 @@
     <ClCompile Include="..\Common\FileTransfer.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
     <ClCompile Include="..\Common\WaitableTimer.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\Algorithm.h" />
     <ClInclude Include="..\Common\CmdHandler.h" />
     <ClInclude Include="..\Common\CmdParser.h" />
     <ClInclude Include="..\Common\Event.h" />
@@ -145,11 +147,13 @@
     <ClInclude Include="..\Common\FileMappingChunkRW.h" />
     <ClInclude Include="..\Common\FileTransfer.h" />
     <ClInclude Include="..\Common\Function.h" />
+    <ClInclude Include="..\Common\GlobOps.h" />
     <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
     <ClInclude Include="..\Common\StreamExt2.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="ClientCmdParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

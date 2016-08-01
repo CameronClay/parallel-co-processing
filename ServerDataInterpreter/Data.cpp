@@ -1,6 +1,5 @@
 #include "Data.h"
 
-
 Data::Data()
 	:
 	fileSize(0),

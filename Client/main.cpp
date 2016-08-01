@@ -16,6 +16,8 @@
 #pragma comment(lib, "x64/TCPCS")
 #endif
 
+#pragma comment(lib, "Algorithm")
+
 TCPClientInterface* client = nullptr;
 
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);

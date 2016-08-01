@@ -101,10 +101,13 @@
     <ClInclude Include="..\Common\FileMappingIndexed.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\GlobOps.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\FileMappingChunkRW.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GlobOps.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Algorithm.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>

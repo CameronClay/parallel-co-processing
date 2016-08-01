@@ -84,7 +84,7 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 	case TYPE_WORK:
 		switch (msg)
 		{
-			case MSG_WORK_NEW:
+			case MSG_WORK_COMPLETE:
 			{
 				const float time = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - *(TimePoint*)clint->obj).count();
 

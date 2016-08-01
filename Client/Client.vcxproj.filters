@@ -42,6 +42,9 @@
     <ClCompile Include="..\Common\FileMapping.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdParser.h">
@@ -81,6 +84,15 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\FileMappingChunkRW.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GlobOps.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Algorithm.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>

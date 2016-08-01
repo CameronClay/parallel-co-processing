@@ -9,6 +9,7 @@
 
 #define TYPE_WORK 2
 #define MSG_WORK_NEW 0
+#define MSG_WORK_COMPLETE 1
 
 #define TYPE_READY 3
 #define MSG_READY_PROCESS 0
