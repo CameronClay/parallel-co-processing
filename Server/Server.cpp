@@ -147,7 +147,7 @@ void ConnectHandler(TCPServInterface& tcpServ, ClientData* clint)
 
 	clint->obj = serv.timePool.alloc<TimePoint>();
 
-	//Transfer algorithim to client
+	//Transfer algorithm to client
 	serv.fileSend.Wait();
 	std::vector<FileMisc::FileData> vect = FileMisc::GetFileNameList(_T("Algorithims"), 0, false);
 	serv.fileSend.SendFiles(clint, vect);

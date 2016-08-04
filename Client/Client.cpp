@@ -11,6 +11,11 @@ Client::~Client()
 	DestroyClient(clint);
 }
 
+TCPClientInterface* Client::GetTCPClient() const
+{
+	return clint;
+}
+
 void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 {
 	Client& clint = *(Client*)tcpClient.GetObj();

@@ -9,6 +9,7 @@ public:
 	Client();
 	~Client();
 
+	TCPClientInterface* GetTCPClient() const;
 private:
 	TCPClientInterface* clint;
 	FileReceive fileReceive;

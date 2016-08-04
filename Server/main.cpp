@@ -19,8 +19,6 @@
 
 #pragma comment(lib, "DataInterp")
 
-static const WCHAR PORT[] = L"985";
-
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);
 void OnExit();
 int _tmain(int argc, TCHAR** argv);
@@ -47,6 +45,11 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 void OnExit()
 {
 	CleanupNetworking();
+}
+
+void Do(int& a)
+{
+	a += 5;
 }
 
 int _tmain(int argc, TCHAR** argv)

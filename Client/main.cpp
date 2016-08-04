@@ -4,6 +4,7 @@
 #include <CmdHandler.h>
 #include <FileTransfer.h>
 #include "ClientCmdParser.h"
+#include "Client.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -18,8 +19,6 @@
 
 #pragma comment(lib, "Algorithm")
 
-TCPClientInterface* client = nullptr;
-
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);
 int _tmain(int argc, TCHAR** argv);
 
@@ -33,7 +32,6 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	case CTRL_CLOSE_EVENT:
 	case CTRL_LOGOFF_EVENT:
 	case CTRL_SHUTDOWN_EVENT:
-		DestroyClient(client);
 		CleanupNetworking();
 		break;
 	default:
@@ -42,35 +40,31 @@ BOOL CALLBACK ConsoleHandler(DWORD ctrlType)
 	return TRUE;
 }
 
-void MsgHandler(TCPClientInterface& client, MsgStreamReader streamReader)
+void OnExit()
 {
-
-}
-
-void DisconnectHandler(TCPClientInterface& client, bool unexpected)
-{
-	
+	CleanupNetworking();
 }
 
 int _tmain(int argc, TCHAR** argv)
 {
 	InitializeNetworking();
 
+	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
+	atexit(OnExit);
+
+	Client client;
+
 	TCHAR buffer[512] = {};
 	CmdHandler cmdHandler;
-	cmdHandler.AddCmd<ConnectParser>(_T("connect"), std::ref(client));
-	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), std::ref(client));
+	cmdHandler.AddCmd<ConnectParser>(_T("connect"), client.GetTCPClient());
+	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), client.GetTCPClient());
 
-	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
-
-	client = CreateClient(MsgHandler, DisconnectHandler);
 	do
 	{
 		_tprintf(_T("Client> "));
 		_getts_s(buffer, 512);
 	} while (cmdHandler.Process(buffer));
 
-	DestroyClient(client);
 	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
 	return 0;
