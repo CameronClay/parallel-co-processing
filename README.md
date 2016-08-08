@@ -1,6 +1,6 @@
 ### How do I get set up? ###
 
-* Navigate to directory in command prompt and execute Symlinks.cmd
+* execute symlinks.cmd
 
 ### Who do I talk to? ###
 

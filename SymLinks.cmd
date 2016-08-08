@@ -1,19 +1,36 @@
 @echo off
 setlocal enabledelayedexpansion
+
+net file 1>nul 2>nul
+if errorlevel 1 goto :runadmin
+
 set i=0
-set a=x32
+set a=x32\
 set b=..
+
+pushd %~p0
 
 for %%d in (Debug, Release, x64\Debug, x64\Release) do (
 if not exist %%d md %%d
 
 if !i!==2 (
-	set a=x64
+	set a=
 	set b=..\..
 )
-if not exist "%%d\TCPCS.dll" mklink "%%d\TCPCS.dll" "!b!\Common\CNLIB\!a!\TCPCS.dll"
-if not exist "%%d\zlib1.dll" mklink "%%d\zlib1.dll" "!b!\Common\CNLIB\!a!\zlib1.dll"
+
+for %%f in (TCPCS.dll, zlib1.dll) do (
+	if exist %%d\%%f del %%d\%%f
+	mklink %%d\%%f "!b!\Common\CNLIB\!a!%%d\%%f"
+)
 
 set /a i+=1
 )
+
+popd
+
 endlocal
+pause
+goto :eof
+
+:runadmin
+wscript RunAdmin.vbs %*

@@ -2,9 +2,17 @@
 #include "Data.h"
 
 #ifdef _X86_
-#pragma comment(lib, "x32/TCPCS")
+#ifdef _DEBUG
+#pragma comment(lib, "x32/Debug/TCPCS")
 #else
-#pragma comment(lib, "x64/TCPCS")
+#pragma comment(lib, "x32/Release/TCPCS")
+#endif
+#elif defined _AMD64_
+#ifdef _DEBUG
+#pragma comment(lib, "x64/Debug/TCPCS")
+#else
+#pragma comment(lib, "x64/Release/TCPCS")
+#endif
 #endif
 
 Data data;
