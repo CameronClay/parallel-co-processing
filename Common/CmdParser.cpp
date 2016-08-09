@@ -11,7 +11,7 @@ CmdParser::CmdParser()
 	cmd(nullptr)
 {}
 
-void CmdParser::ParseCmd(TCHAR* str)
+bool CmdParser::ParseCmd(TCHAR* str)
 {
 	cmd = nullptr;
 	args.clear();
@@ -35,6 +35,9 @@ void CmdParser::ParseCmd(TCHAR* str)
 				else if (*c == _T('='))
 				{
 					*c = '\0';
+					if (args.empty())
+						return false;
+
 					args.back().data = c + 1;
 				}
 			}
@@ -51,6 +54,8 @@ void CmdParser::ParseCmd(TCHAR* str)
 		//store command if no parameters present
 		cmd = str;
 	}
+
+	return true;
 }
 
 const TCHAR* CmdParser::GetCmd() const

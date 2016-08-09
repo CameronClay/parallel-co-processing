@@ -48,9 +48,7 @@ public:
 	void OnCompletion();
 private:
 	std::vector<FileMisc::FileData> fileList;
-	//size_t curFile;
 	std::vector<FileMisc::FileData>::iterator curFile;
 	File file;
-	DWORD totalRead;
 };
 

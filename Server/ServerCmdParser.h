@@ -31,7 +31,7 @@ private:
 		{
 			if (_tcscmp(param.data, _T("ipv4")) == 0)
 				ipv = ipv4;
-			else if (_tcscmp(param.data, _T("ipv4")) == 0)
+			else if (_tcscmp(param.data, _T("ipv6")) == 0)
 				ipv = ipv6;
 			else if (_tcscmp(param.data, _T("ipboth")) == 0)
 				ipv = ipboth;

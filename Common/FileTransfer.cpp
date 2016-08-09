@@ -23,17 +23,16 @@ void FileSend::SendThread()
 				for (auto& it : fileList)
 				{
 					File file(it.fileName.c_str(), GENERIC_READ);
-					DWORD64 totalRead = 0;
 
-					while ((threadState == FileSend::RUNNING) && (totalRead < it.size))
+					while ((threadState == FileSend::RUNNING) && it.size)
 					{
 						auto sndBuff = serv.GetSendBuffer(maxBuffSize);
-						*(short*)(sndBuff.buffer) = TYPE_FILETRANSFER;
-						*(short*)(sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
+						*((short*)sndBuff.buffer) = TYPE_FILETRANSFER;
+						*((short*)sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
 
 						DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
-						serv.SendClientData(sndBuff, read, clint, true);
-						totalRead += read;
+						serv.SendClientData(sndBuff, read + MSG_OFFSET, clint, true);
+						it.size -= read;
 					}
 				}
 			}
@@ -122,8 +121,8 @@ bool FileReceive::ReadFiles(MsgStreamReader& streamReader)
 
 		const UINT size = streamReader.GetDataSize();
 		file.Write(streamReader.GetData(), size);
-		totalRead += size;
-		if (totalRead == curFile->size)
+		curFile->size -= size;
+		while (curFile->size == 0)
 		{
 			if (curFile != fileList.end() - 1)
 			{

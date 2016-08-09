@@ -31,12 +31,12 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 		case MSG_FILETRANSFER_SEND:
 			if (clint.fileReceive.ReadFiles(streamReader))
 			{
-				_tprintf(_T("Algorithm received; ready to process..."));
+				_tprintf(_T("Algorithm received; ready to process...\n"));
 				tcpClient.SendMsg(TYPE_READY, MSG_READY_PROCESS);
 			}
 			break;
 		case MSG_FILETRANSFER_ABORTED:
-			_tprintf(_T("File transfer has been aborted by server"));
+			_tprintf(_T("File transfer has been aborted by server\n"));
 			break;
 		}
 		break;
@@ -44,7 +44,7 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 		switch (msg)
 		{
 		case MSG_WORK_NEW:
-			_tprintf(_T("Work load of %d bytes now processing..."), inDataSize);
+			_tprintf(_T("Work load of %d bytes now processing...\n"), inDataSize);
 
 			uint32_t outSizeMax = Algorithm::GetOutSize(inDataSize);
 			auto strm = tcpClient.CreateOutStream(outSizeMax, TYPE_WORK, MSG_WORK_COMPLETE);
@@ -57,7 +57,7 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 		switch (msg)
 		{
 		case MSG_KICK_TOOSLOW:
-			_tprintf(_T("You have been remove from the server because you took too long to respond/process work request"));
+			_tprintf(_T("You have been remove from the server because you took too long to respond/process work request\n"));
 			break;
 		}
 		break;
@@ -67,5 +67,5 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 void DisconnectHandler(TCPClientInterface& tcpClient, bool unexpected)
 {
 	Client& clint = *(Client*)tcpClient.GetObj();
-	_tprintf(_T("You have lost connection to server"));
+	_tprintf(_T("You have lost connection to server\n"));
 }

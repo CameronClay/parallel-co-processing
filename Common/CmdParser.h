@@ -15,7 +15,7 @@ public:
 
 	CmdParser();
 
-	void ParseCmd(TCHAR* str);
+	bool ParseCmd(TCHAR* str);
 
 	const TCHAR* GetCmd() const;
 	const std::vector<ParamData>& GetArgs() const;

@@ -34,15 +34,3 @@ public:
 		return fd;
 	}
 };
-
-//template<typename T>
-//void StreamReader::Read(std::vector<T>& vec)
-//{
-//	const UINT size = stream.Read<UINT>();
-//	vec.reserve(size);
-//	for (UINT i = 0; i < size; i++)
-//	{
-//		vec.push_back();
-//		stream.Read<T>(vec.back());
-//	}
-//}

@@ -65,6 +65,7 @@ int _tmain(int argc, TCHAR** argv)
 	TCHAR buffer[512] = {};
 	CmdHandler cmdHandler;
 	cmdHandler.AddCmd<ConnectParser>(_T("connect"), client.GetTCPClient());
+	cmdHandler.AddCmd<RecvServDataParser>(_T("recvdata"), client.GetTCPClient());
 	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), client.GetTCPClient());
 
 	do

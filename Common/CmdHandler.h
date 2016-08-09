@@ -17,7 +17,8 @@ public:
 	}
 	bool Process(TCHAR* str)
 	{
-		cmdParser.ParseCmd(str);
+		if (!cmdParser.ParseCmd(str))
+			_tprintf(_T("Error parsing cmd see usage for more info\n"));
 
 		if (cmdParser.CmdComp(_T("exit")))
 			return false;

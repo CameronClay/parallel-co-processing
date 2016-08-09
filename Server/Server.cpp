@@ -19,8 +19,8 @@ void Server::WorkThread()
 		while (clint = clntQueue.FindClientForWork())
 		{
 			auto sndBuff = serv->GetSendBuffer(buffSize);
-			*(short*)(sndBuff.buffer) = TYPE_WORK;
-			*(short*)(sndBuff.buffer + 1) = MSG_WORK_NEW;
+			*((short*)sndBuff.buffer) = TYPE_WORK;
+			*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
 			DWORD64 cursor = 0;
 			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize);
@@ -46,16 +46,17 @@ void Server::WorkThread()
 
 Server::Server()
 	:
-	serv(nullptr),
+	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
 	exitThread(false),
 	timePool(sizeof(TimePoint), MAXCLIENTS),
 	tempFileMap(1GB)
 {
-	fileSend.Initialize();
 	tempFileMap.Create(_T("NewData.dat"), DataInterp::GetFileSize());
-	serv = CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this);
+
+	FileMisc::SetCurDirectory(L"Algorithms");
+	fileSend.Initialize();
 	workThread = std::thread(&Server::WorkThread, this);
 }
 Server::~Server()
@@ -102,12 +103,21 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 	case TYPE_READY:
 		switch (msg)
 		{
+			case MSG_READY_INITIALIZED:
+			{
+				//Transfer algorithm to client
+				serv.fileSend.Wait();
+				auto vect = FileMisc::GetFileNameList(L"", 0, false);
+				serv.fileSend.SendFiles(clint, vect);
+			}
+			break;
 			case MSG_READY_PROCESS:
 			{
 				serv.clntQueue.AddClient(clint);
 			}
 			break;
 		}
+		break;
 	}
 }
 
@@ -146,9 +156,4 @@ void ConnectHandler(TCPServInterface& tcpServ, ClientData* clint)
 	Server& serv = *(Server*)tcpServ.GetObj();
 
 	clint->obj = serv.timePool.alloc<TimePoint>();
-
-	//Transfer algorithm to client
-	serv.fileSend.Wait();
-	std::vector<FileMisc::FileData> vect = FileMisc::GetFileNameList(_T("Algorithims"), 0, false);
-	serv.fileSend.SendFiles(clint, vect);
 }

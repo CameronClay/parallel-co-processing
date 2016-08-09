@@ -2,6 +2,7 @@
 #include <Includes.h>
 #include <ParamParser.h>
 #include <TCPClientInterface.h>
+#include <MessagesExt.h>
 
 class ConnectParser : public ParamParser
 {
@@ -54,6 +55,52 @@ private:
 	wchar_t *ip, *port;
 	bool ipv6;
 	float timeout;
+};
+
+class RecvServDataParser : public ParamParser
+{
+public:
+	template<typename... ExecuteArgs>
+	RecvServDataParser(ExecuteArgs&&... args)
+		:
+		ParamParser({ { _T("nt"), false },{ _T("nct"), false } }, { this, &RecvServDataParser::Execute, std::forward<ExecuteArgs>(args)... })
+	{}
+private:
+	void DefaultParams()
+	{
+		nThreads = 2;
+		nConcThreads = 1;
+	}
+	bool ProcessParam(const CmdParser::ParamData& param)
+	{
+		if (_tcscmp(param.param, _T("nt")) == 0)
+		{
+			nThreads = std::stoull(param.data);
+		}
+		if (_tcscmp(param.param, _T("nct")) == 0)
+		{
+			nConcThreads = std::stoull(param.data);
+		}
+
+		return true;
+	}
+	void Usage()
+	{
+		_tprintf(_T("Usage: [-nt=nThreads[2] -nct=nConcThreads[1]]\n"));
+	}
+	void Execute(TCPClientInterface* clint)
+	{
+		const bool res = clint->RecvServData(nThreads, nConcThreads);
+		if (res)
+			_tprintf(_T("Now receiving data from serv\n"));
+		else
+			_tprintf(_T("Failed to receive data from serv\n"));
+
+		if (res)
+			clint->SendMsg(TYPE_READY, MSG_READY_INITIALIZED);
+	}
+
+	DWORD nThreads, nConcThreads;
 };
 
 class DisconnectParser : public ParamParser
