@@ -244,3 +244,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /Server/NewData.dat
+/DataGen/Data.dat

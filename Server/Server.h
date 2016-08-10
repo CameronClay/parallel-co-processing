@@ -30,7 +30,7 @@ private:
 	ClientWorkMap workMap;
 	FileSend fileSend;
 	FileMappingIndexed tempFileMap;
-	MemPool<> timePool;
+	MemPoolSync<> timePool;
 	std::thread workThread;
 	std::atomic<bool> exitThread;
 };                   

@@ -36,6 +36,7 @@ void Server::WorkThread()
 			else
 			{
 				tempFileMap.ReorderFileData();
+				return;
 			}
 
 			if (exitThread.load(std::memory_order_acquire))
