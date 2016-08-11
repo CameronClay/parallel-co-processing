@@ -47,9 +47,13 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 			_tprintf(_T("Work load of %d bytes now processing...\n"), inDataSize);
 
 			uint32_t outSizeMax = Algorithm::GetOutSize(inDataSize);
-			auto strm = tcpClient.CreateOutStream(outSizeMax, TYPE_WORK, MSG_WORK_COMPLETE);
-			Algorithm::AlgorithmInOut(indata, inDataSize, strm.GetData(), outSizeMax);
-			tcpClient.SendServData(strm);
+
+			auto sndBuff = tcpClient.GetSendBuffer(outSizeMax);
+			*((short*)sndBuff.buffer) = TYPE_WORK;
+			*((short*)sndBuff.buffer + 1) = MSG_WORK_COMPLETE;
+
+			const uint32_t dataSize = Algorithm::AlgorithmInOut(indata, inDataSize, sndBuff.buffer, outSizeMax);
+			tcpClient.SendServData(sndBuff, dataSize);
 			break;
 		}
 		break;

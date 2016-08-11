@@ -13,7 +13,7 @@ void FileSend::SendThread()
 		if (threadState == FileSend::RUNNING)
 		{
 			entered = true;
-			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
+			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND); //sizetype = 58, strm size = 62 (MSG_OFFSET + 58)
 			strm.Write(fileList);
 			serv.SendClientData(strm, clint, true);
 
