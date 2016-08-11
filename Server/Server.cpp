@@ -23,7 +23,7 @@ void Server::WorkThread()
 			*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
 			DWORD64 cursor = 0;
-			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize);
+			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET);
 			if (wi.size)
 			{
 				workMap.Change(clint, wi);
@@ -31,7 +31,11 @@ void Server::WorkThread()
 				if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
 					workMap.Remove(clint);
 				else
-					*(TimePoint*)clint->obj = Clock::now();
+				{
+					Clock::now();
+					TimePoint tp = (*(TimePoint*)(clint->obj));
+					(*(TimePoint*)(clint->obj)) = Clock::now();
+				}
 			}
 			else
 			{
@@ -47,18 +51,19 @@ void Server::WorkThread()
 
 Server::Server()
 	:
-	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
+	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(4096, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
 	exitThread(false),
-	timePool(sizeof(TimePoint), MAXCLIENTS),
 	tempFileMap(1GB)
 {
 	tempFileMap.Create(_T("NewData.dat"), DataInterp::GetFileSize());
 
-	FileMisc::SetCurDirectory(L"Algorithms");
+	//FileMisc::SetCurDirectory(L"Algorithms");
 	fileSend.Initialize();
 	workThread = std::thread(&Server::WorkThread, this);
+
+	DataInterp::LoadData(1KB);
 }
 Server::~Server()
 {
@@ -108,7 +113,7 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 			{
 				//Transfer algorithm to client
 				serv.fileSend.Wait();
-				auto vect = FileMisc::GetFileNameList(L"", 0, false);
+				auto vect = FileMisc::GetFileNameList(L"Algorithms", 0, false);
 				serv.fileSend.SendFiles(clint, vect);
 			}
 			break;
@@ -126,7 +131,6 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 {
 	Server& serv = *(Server*)tcpServ.GetObj();
 	serv.clntQueue.RemoveClient(clint);
-	serv.timePool.dealloc((TimePoint*&)clint->obj);
 
 	//Check if client still has work to be processed
 	WorkInfo wi;
@@ -155,6 +159,4 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 void ConnectHandler(TCPServInterface& tcpServ, ClientData* clint)
 {
 	Server& serv = *(Server*)tcpServ.GetObj();
-
-	clint->obj = serv.timePool.alloc<TimePoint>();
 }

@@ -22,7 +22,7 @@ void FileSend::SendThread()
 				const UINT maxBuffSize = serv.GetBufferOptions().GetMaxDataBuffSize();
 				for (auto& it : fileList)
 				{
-					File file(it.fileName.c_str(), GENERIC_READ);
+					File file((std::wstring(L"Algorithms\\") + it.fileName).c_str(), GENERIC_READ);
 
 					while ((threadState == FileSend::RUNNING) && it.size)
 					{

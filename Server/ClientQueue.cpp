@@ -13,13 +13,17 @@ ClientQueue::~ClientQueue()
 
 void ClientQueue::AddClient(ClientData* clint)
 {
-	clint->obj = timePool.construct<TimePoint>(Clock::now());
+	clint->obj = timePool.construct<TimePoint>();
+	TimePoint tp = (*(TimePoint*)(clint->obj));
+	//clint->obj = new TimePoint();
+
 	otherClients.push(clint);
 }
 
 void ClientQueue::RemoveClient(ClientData* clint)
 {
-	timePool.destruct<TimePoint>((TimePoint*&)clint->obj);
+	timePool.destruct<TimePoint>((TimePoint*&)(clint->obj));
+	//delete (TimePoint*)(clint->obj);
 }
 
 bool ClientQueue::EvaluateClient(ClientData* clint, float time)

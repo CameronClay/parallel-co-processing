@@ -1,10 +1,11 @@
 #include "Client.h"
 #include <Algorithm.h>
 #include <MessagesExt.h>
+#include <GlobOps.h>
 
 Client::Client()
 {
-	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
+	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(4096, 2MB), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
 }
 Client::~Client()
 {
@@ -48,12 +49,12 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 
 			uint32_t outSizeMax = Algorithm::GetOutSize(inDataSize);
 
-			auto sndBuff = tcpClient.GetSendBuffer(outSizeMax);
+			auto sndBuff = tcpClient.GetSendBuffer(outSizeMax + MSG_OFFSET);
 			*((short*)sndBuff.buffer) = TYPE_WORK;
 			*((short*)sndBuff.buffer + 1) = MSG_WORK_COMPLETE;
 
-			const uint32_t dataSize = Algorithm::AlgorithmInOut(indata, inDataSize, sndBuff.buffer, outSizeMax);
-			tcpClient.SendServData(sndBuff, dataSize);
+			const uint32_t dataSize = Algorithm::AlgorithmInOut(indata, inDataSize, sndBuff.buffer + MSG_OFFSET, outSizeMax);
+			tcpClient.SendServData(sndBuff, dataSize + MSG_OFFSET);
 			break;
 		}
 		break;

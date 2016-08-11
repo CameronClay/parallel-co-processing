@@ -23,6 +23,5 @@ public:
 private:
 	boost::lockfree::queue<ClientData*, boost::lockfree::fixed_sized<true>> fastClients, otherClients;
 
-	//no sync needed because ConnectHandler and DisconnectHandler are synced
-	MemPool<> timePool;
+	MemPoolSync<> timePool;
 };
