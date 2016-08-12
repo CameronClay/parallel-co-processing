@@ -98,7 +98,11 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 					tcpServ.DisconnectClient(clint);
 				}
 
-				serv.tempFileMap.Write(streamReader.GetData(), streamReader.GetDataSize());
+				WorkInfo wi;
+				if (serv.workMap.GetClientWork(clint, wi))
+					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize());
+				else
+					tcpServ.DisconnectClient(clint);
 			}
 			break;
 		}

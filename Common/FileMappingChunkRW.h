@@ -173,25 +173,35 @@ public:
 		}
 	}
 
-	uint64_t GetWritePos() const
+	uint64_t GetMappedWritePos() const
 	{
 		return writePos;
 	}
 
+	uint64_t GetMappedReadPos() const
+	{
+		return readPos;
+	}
+
+	uint64_t GetWritePos() const
+	{
+		return writePos + (writeEnd - writeCur);
+	}
+
 	uint64_t GetReadPos() const
 	{
-		return writePos;
+		return readPos + (readEnd - readCur);
 	}
 
 protected:
 	uint32_t chunkMapSize;
 
-private:
 	char *writeBeg = nullptr, *writeEnd = nullptr, *writeCur = nullptr,
 		*readBeg = nullptr, *readEnd = nullptr, *readCur = nullptr;
 
 	uint64_t writePos = 0, readPos = 0;
 
+private:
 	void RemapWrite()
 	{
 		if(writeBeg)

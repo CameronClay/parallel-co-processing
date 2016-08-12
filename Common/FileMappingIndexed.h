@@ -18,6 +18,15 @@ public:
 		FileMappingChunkRW(chunkSize)
 	{}
 
+	template<typename T>
+	void Write(uint32_t index, T* t, size_t size)
+	{
+		auto it = std::upper_bound(indices.begin(), indices.end(), index, &IndexEntry::Less);
+		indices.emplace(it, index, GetWritePos(), size);
+
+		__super::Write(t, size);
+	}
+
 	void ReorderFileData()
 	{
 		char* p = nullptr;
@@ -86,9 +95,9 @@ private:
 			size(size)
 		{}
 
-		static inline bool Less(const IndexEntry& lhs, const IndexEntry& rhs)
+		static inline bool Less(uint32_t index, const IndexEntry& rhs)
 		{
-			return lhs.index < rhs.index;
+			return index < rhs.index;
 		}
 
 		uint32_t index = 0;

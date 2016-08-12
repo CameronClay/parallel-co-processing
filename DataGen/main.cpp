@@ -5,19 +5,17 @@
 #include <ctime>
 #include <GlobOps.h>
 
-#ifdef _X86_
 #ifdef _DEBUG
-#pragma comment(lib, "x32/Debug/TCPCS")
+#define CONF "Debug"
 #else
-#pragma comment(lib, "x32/Release/TCPCS")
+#define CONF "Release"
 #endif
+#if defined _X86_
+#define ARCH "x32"
 #elif defined _AMD64_
-#ifdef _DEBUG
-#pragma comment(lib, "x64/Debug/TCPCS")
-#else
-#pragma comment(lib, "x64/Release/TCPCS")
+#define ARCH "x64"
 #endif
-#endif
+#pragma comment(lib, ARCH"/" CONF"/TCPCS") 
 
 #pragma comment(lib, "Algorithm")
 

@@ -10,7 +10,7 @@ uint32_t Algorithm::AlgorithmInOut(void* in, uint32_t inSize, void* out, uint32_
 		return 0;
 
 	inSize /= sizeof(uint32_t);
-	for (uint32_t *pin = (uint32_t*)in, *pout = (uint32_t*)out, *pend = ((uint32_t*)in) + inSize; pin != pend; ++pin)
+	for (uint32_t *pin = (uint32_t*)in, *pout = (uint32_t*)out, *pend = ((uint32_t*)in) + inSize; pin != pend; ++pin, ++pout)
 	{
 		*pout = *pin * *pin;
 	}
