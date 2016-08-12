@@ -28,17 +28,14 @@ void Server::WorkThread()
 			{
 				workMap.Change(clint, wi);
 
+				*(TimePoint*)(clint->obj) = Clock::now();
+
 				if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
 					workMap.Remove(clint);
-				else
-				{
-					Clock::now();
-					TimePoint tp = (*(TimePoint*)(clint->obj));
-					(*(TimePoint*)(clint->obj)) = Clock::now();
-				}
 			}
 			else
 			{
+				serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
 				tempFileMap.ReorderFileData();
 				return;
 			}
@@ -51,7 +48,7 @@ void Server::WorkThread()
 
 Server::Server()
 	:
-	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(4096, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
+	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(8KB, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
 	exitThread(false),
@@ -63,7 +60,7 @@ Server::Server()
 	fileSend.Initialize();
 	workThread = std::thread(&Server::WorkThread, this);
 
-	DataInterp::LoadData(1KB);
+	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
 }
 Server::~Server()
 {
@@ -149,10 +146,10 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 
 		serv.workMap.Change(clint, wi);
 
+		*(TimePoint*)(clint->obj) = Clock::now();
+
 		if (!tcpServ.SendClientData(sndBuff, buffSize, clint, true))
 			serv.workMap.Remove(clint);
-		else
-			*(TimePoint*)clint->obj = Clock::now();
 	}
 }
 

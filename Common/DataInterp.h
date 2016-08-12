@@ -24,7 +24,7 @@ struct WorkInfo
 //All functions here are non-thread-safe
 namespace DataInterp
 {
-	SERVDLL void LoadData(uint32_t expectedClientCount);
+	SERVDLL void LoadData(uint32_t expectedClientCount, uint32_t desiredChunkSize);
 	SERVDLL unsigned long long GetFileSize();
 	SERVDLL uint32_t GetChunkSize();
 	SERVDLL WorkInfo GetClientWork(void* out, uint32_t buffSize);

@@ -20,9 +20,9 @@ Data data;
 const SERVDLL float DataInterp::ACCEPTEDTIME = 750.0f;
 const SERVDLL float DataInterp::MAXTIME = DataInterp::ACCEPTEDTIME * DataInterp::ACCEPTEDTIME;
 
-void DataInterp::LoadData(uint32_t expectedClientCount)
+void DataInterp::LoadData(uint32_t expectedClientCount, uint32_t desiredChunkSize)
 {
-	data.LoadData(expectedClientCount);
+	data.LoadData(expectedClientCount, desiredChunkSize);
 }
 
 unsigned long long DataInterp::GetFileSize()

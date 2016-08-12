@@ -2,10 +2,12 @@
 #include <Algorithm.h>
 #include <MessagesExt.h>
 #include <GlobOps.h>
+#include <MsgHeader.h>
 
 Client::Client()
 {
-	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(4096, 2MB), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
+	const uint32_t outSizeMax = Algorithm::GetOutSize(8KB);
+	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(outSizeMax + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 2MB), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
 }
 Client::~Client()
 {

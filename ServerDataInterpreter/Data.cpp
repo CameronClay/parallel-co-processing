@@ -8,11 +8,16 @@ Data::Data()
 	curIndex(0)
 {}
 
-void Data::LoadData(uint32_t expectedClientCount)
+void Data::LoadData(uint32_t expectedClientCount, uint32_t desiredChunkSize)
 {
 	file.Open(L"Data.dat", GENERIC_READ);
 	fileSize = file.GetSize();
-	chunkSize = fileSize / expectedClientCount;
+
+	if (fileSize > desiredChunkSize)
+		chunkSize = desiredChunkSize;
+	else
+		chunkSize = fileSize;
+
 	cursorPos = 0;
 }
 
