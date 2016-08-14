@@ -24,6 +24,7 @@
 #pragma comment(lib, ARCH"/" CONF"/TCPCS") 
 
 #pragma comment(lib, "DataInterp")
+#pragma comment(lib, "Algorithm")
 
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);
 void OnExit();

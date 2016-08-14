@@ -45,10 +45,10 @@ bool FileMapping::Create(HANDLE hFile, DWORD protect, DWORD64 size)
 
 void FileMapping::Close()
 {
+	if (hMap)
+		CloseHandle(hMap);
 	if (closeHFile && hFile)
 		CloseHandle(hFile);
-	if (hFile)
-		CloseHandle(hMap);
 }
 
 FileMapping::~FileMapping()

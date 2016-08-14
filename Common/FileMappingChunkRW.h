@@ -7,17 +7,33 @@
 class FileMappingChunkRW : public FileMapping
 {
 public:
-	FileMappingChunkRW(const TCHAR* filename, DWORD64 size, const uint32_t chunkSize = 100MB)
+	FileMappingChunkRW(const TCHAR* filename, DWORD64 size, const size_t chunkSize = 100MB)
 		:
 		FileMapping(filename, size),
-		chunkMapSize(((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN) //Round to nearest FileMapping::ALLOCGRAN
+		chunkMapSize(min(size, ((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN)) //Round to nearest FileMapping::ALLOCGRAN
 	{}
 
-	FileMappingChunkRW(const uint32_t chunkSize = 100MB)
+	FileMappingChunkRW(const size_t chunkSize = 100MB)
 		:
 		FileMapping(),
 		chunkMapSize(((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN) //Round to nearest FileMapping::ALLOCGRAN
 	{}
+
+	bool Create(const TCHAR* filename, DWORD64 size)
+	{
+		chunkMapSize = min(chunkMapSize, size);
+		return __super::Create(filename, size);
+	}
+	bool Create(DWORD64 size) 	//Backed by system page instead of file
+	{
+		chunkMapSize = min(chunkMapSize, size);
+		return __super::Create(size);
+	}
+	bool Create(HANDLE hFile, DWORD protect, DWORD64 size)
+	{
+		chunkMapSize = min(chunkMapSize, size);
+		return __super::Create(hFile, protect, size);
+	}
 
 	template<typename T>
 	void Write(T* t, size_t size)
@@ -194,7 +210,7 @@ public:
 	}
 
 protected:
-	uint32_t chunkMapSize;
+	size_t chunkMapSize;
 
 	char *writeBeg = nullptr, *writeEnd = nullptr, *writeCur = nullptr,
 		*readBeg = nullptr, *readEnd = nullptr, *readCur = nullptr;

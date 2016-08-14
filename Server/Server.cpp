@@ -3,6 +3,7 @@
 #include <MessagesExt.h>
 #include <DataInterp.h>
 #include <Chrono>
+#include <Algorithm.h>
 
 void Server::WorkThread()
 {
@@ -23,7 +24,7 @@ void Server::WorkThread()
 			*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
 			DWORD64 cursor = 0;
-			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET);
+			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET); //needs sync if multiple threads
 			if (wi.size)
 			{
 				workMap.Change(clint, wi);
@@ -51,16 +52,14 @@ Server::Server()
 	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(8KB, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
-	exitThread(false),
-	tempFileMap(1GB)
+	exitThread(false)
 {
-	tempFileMap.Create(_T("NewData.dat"), DataInterp::GetFileSize());
+	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
+	tempFileMap.Create(_T("NewData.dat"), Algorithm::GetOutSize(DataInterp::GetFileSize()));
 
 	//FileMisc::SetCurDirectory(L"Algorithms");
 	fileSend.Initialize();
 	workThread = std::thread(&Server::WorkThread, this);
-
-	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
 }
 Server::~Server()
 {
@@ -100,7 +99,7 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 
 				WorkInfo wi;
 				if (serv.workMap.GetClientWork(clint, wi))
-					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize());
+					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize()); // needs sync
 				else
 					tcpServ.DisconnectClient(clint);
 			}

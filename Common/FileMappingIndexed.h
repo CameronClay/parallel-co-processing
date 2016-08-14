@@ -9,11 +9,11 @@
 class FileMappingIndexed : public FileMappingChunkRW
 {
 public:
-	FileMappingIndexed(const TCHAR* filename, DWORD64 size, const uint32_t chunkSize = 100MB)
+	FileMappingIndexed(const TCHAR* filename, DWORD64 size, const size_t chunkSize = 100MB)
 		:
 		FileMappingChunkRW(filename, size, chunkSize)
 	{}
-	FileMappingIndexed(const uint32_t chunkSize = 100MB)
+	FileMappingIndexed(const size_t chunkSize = 100MB)
 		:
 		FileMappingChunkRW(chunkSize)
 	{}
