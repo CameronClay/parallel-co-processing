@@ -42,7 +42,7 @@ public:
 			if (it != cmds.end())
 				it->second->Parse(cmdParser);
 			else
-				_tprintf(_T("Error: use help for more info\n"));
+				_tprintf(_T("Error: invalid cmd, see help for more info\n"));
 		}
 		return true;
 	}

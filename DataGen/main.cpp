@@ -65,9 +65,14 @@ int _tmain(int argc, TCHAR** argv)
 {
 	srand(time(NULL));
 	FileMisc::SetCurDirectory(L"..\\Server");
-	//GenerateData(L"Data.dat", 1MB);
-	bool verified = VerifyNewData(L"NewData.dat", L"Data.dat");
-	_tprintf(_T("Verified: %d\n"), verified);
-	TCHAR buffer[64];
-	_getts_s(buffer);
+
+	//GenerateData(L"Data.dat", 10MB);
+
+	const bool verified = VerifyNewData(L"NewData.dat", L"Data.dat");
+	if(verified)
+		_tprintf(_T("Data Verified\n"), verified);
+	else
+		_tprintf(_T("Data not verified\n"), verified);
+
+	system("PAUSE");
 }

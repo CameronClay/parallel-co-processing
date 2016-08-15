@@ -56,11 +56,6 @@ public:
 		if (!writeBeg)
 			RemapWrite();
 
-		if (!writeBeg)
-		{
-			int a = 0;
-		}
-
 		while (size)
 		{
 			if (writeCur + size > writeEnd)
@@ -100,11 +95,6 @@ public:
 		if (!readBeg)
 			RemapRead();
 
-		if (!readBeg)
-		{
-			int a = 0;
-		}
-
 		while (size)
 		{
 			if (readCur + size > readEnd)
@@ -140,11 +130,6 @@ public:
 	{
 		if (!readBeg)
 			RemapRead();
-
-		if (!readBeg)
-		{
-			int a = 0;
-		}
 
 		while (size)
 		{
@@ -190,11 +175,6 @@ public:
 	{
 		if (!writeBeg)
 			RemapWrite();
-
-		if (!writeBeg)
-		{
-			int a = 0;
-		}
 
 		while (size)
 		{

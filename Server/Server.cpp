@@ -54,7 +54,7 @@ void Server::WorkThread()
 
 Server::Server(uint32_t nThreads, uint64_t buffSize)
 	:
-	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(buffSize, 1MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
+	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(buffSize, 1MB), SocketOptions(0, 0, true), 10, 30, MAXCLIENTS, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
 	threadPool(nThreads),
