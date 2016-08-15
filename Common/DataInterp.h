@@ -32,4 +32,5 @@ namespace DataInterp
 
 	extern const SERVDLL float ACCEPTEDTIME;
 	extern const SERVDLL float MAXTIME;
+	extern const SERVDLL bool ORDERED;
 };

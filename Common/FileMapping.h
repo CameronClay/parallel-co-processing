@@ -7,12 +7,12 @@ public:
 	static const DWORD ALLOCGRAN;
 
 	FileMapping() = default;
-	FileMapping(const TCHAR* filename, DWORD64 size);
+	FileMapping(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS);
 	FileMapping(DWORD64 size); 	//Backed by system page instead of file
 	FileMapping(HANDLE hFile, DWORD protect, DWORD64 size);
 	~FileMapping();
 
-	bool Create(const TCHAR* filename, DWORD64 size);
+	bool Create(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS);
 	bool Create(DWORD64 size); 	//Backed by system page instead of file
 	bool Create(HANDLE hFile, DWORD protect, DWORD64 size);
 
@@ -29,11 +29,12 @@ public:
 
 	//desiredAccess = FILE_MAP_WRITE, FILE_MAP_READ, FILE_MAP_COPY, FILE_MAP_ALL_ACCESS
 	template<typename T>
-	T* MapRandomAccess(DWORD desiredAccess, DWORD64 pos, size_t size)
+	T* MapRandomAccess(T*& baseAddress, DWORD desiredAccess, DWORD64 pos, size_t size)
 	{
 		const DWORD offset = pos % ALLOCGRAN;
 		pos -= offset;
-		return MapAllocGran<T>(desiredAccess, pos, size + offset) + offset;
+		baseAddress = MapAllocGran<T>(desiredAccess, pos, size + offset);
+		return baseAddress + offset;
 	}
 
 	template<typename T>

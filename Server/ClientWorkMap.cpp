@@ -37,3 +37,8 @@ bool ClientWorkMap::GetClientWork(ClientData* clint, WorkInfo& work)
 	}
 	return false;
 }
+
+bool ClientWorkMap::Empty() const
+{
+	return workMap.empty();
+}

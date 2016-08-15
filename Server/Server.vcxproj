@@ -155,6 +155,7 @@
     <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
+    <ClInclude Include="..\Common\ThreadPool.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientQueue.h" />
     <ClInclude Include="ClientWorkMap.h" />

@@ -17,6 +17,7 @@ Data data;
 
 const SERVDLL float DataInterp::ACCEPTEDTIME = 750.0f;
 const SERVDLL float DataInterp::MAXTIME = DataInterp::ACCEPTEDTIME * DataInterp::ACCEPTEDTIME;
+const SERVDLL bool DataInterp::ORDERED = true;
 
 void DataInterp::LoadData(uint32_t expectedClientCount, uint32_t desiredChunkSize)
 {

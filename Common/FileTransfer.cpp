@@ -5,6 +5,7 @@
 
 void FileSend::SendThread()
 {
+	const UINT maxBuffSize = serv.GetBufferOptions().GetMaxDataBuffSize();
 	while (threadState != FileSend::EXITING)
 	{
 		startEv.Wait();
@@ -13,13 +14,12 @@ void FileSend::SendThread()
 		if (threadState == FileSend::RUNNING)
 		{
 			entered = true;
-			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND); //sizetype = 58, strm size = 62 (MSG_OFFSET + 58)
+			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
 			strm.Write(fileList);
 			serv.SendClientData(strm, clint, true);
 
 			if (threadState == FileSend::RUNNING)
 			{
-				const UINT maxBuffSize = serv.GetBufferOptions().GetMaxDataBuffSize();
 				for (auto& it : fileList)
 				{
 					File file((std::wstring(L"Algorithms\\") + it.fileName).c_str(), GENERIC_READ);
@@ -30,7 +30,7 @@ void FileSend::SendThread()
 						*((short*)sndBuff.buffer) = TYPE_FILETRANSFER;
 						*((short*)sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
 
-						DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
+						const DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
 						serv.SendClientData(sndBuff, read + MSG_OFFSET, clint, true);
 						it.size -= read;
 					}

@@ -18,6 +18,7 @@ public:
 	void Change(ClientData* clint, const WorkInfo& wi);
 	bool Remove(ClientData* clint);
 	bool GetClientWork(ClientData* clint, WorkInfo& work);
+	bool Empty() const;
 private:
 	std::unordered_map<ClientData*, WorkInfo> workMap;
 	std::mutex mutex;

@@ -31,8 +31,8 @@ public:
 
 	void ReorderFileData()
 	{
-		uint64_t curPos = GetWritePos();
-		FileMappingChunkRW mp{ _T("TempData.dat"), curPos };
+		const uint64_t curPos = GetWritePos();
+		FileMappingChunkRW mp{ _T("TempData.dat"), curPos, CREATE_ALWAYS };
 		for (auto it = indices.begin(), end = indices.end(); it != end; ++it)
 		{
 			mp.Write(*this, it->pos, it->size);

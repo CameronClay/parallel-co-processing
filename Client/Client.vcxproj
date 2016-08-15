@@ -153,6 +153,7 @@
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
     <ClInclude Include="..\Common\StreamExt2.h" />
+    <ClInclude Include="..\Common\ThreadPool.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientCmdParser.h" />

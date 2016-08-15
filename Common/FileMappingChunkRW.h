@@ -7,9 +7,9 @@
 class FileMappingChunkRW : public FileMapping
 {
 public:
-	FileMappingChunkRW(const TCHAR* filename, DWORD64 size, const size_t chunkSize = 100MB)
+	FileMappingChunkRW(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS, const size_t chunkSize = 100MB)
 		:
-		FileMapping(filename, size),
+		FileMapping(filename, size, createFlags),
 		chunkMapSize(min(size, ((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN)) //Round to nearest FileMapping::ALLOCGRAN
 	{}
 
@@ -34,9 +34,9 @@ public:
 		__super::Close();
 	}
 
-	bool Create(const TCHAR* filename, DWORD64 size)
+	bool Create(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS)
 	{
-		chunkMapSize = min(chunkMapSize, size);
+		chunkMapSize = min(chunkMapSize, size, createFlags);
 		return __super::Create(filename, size);
 	}
 	bool Create(DWORD64 size) 	//Backed by system page instead of file
@@ -55,6 +55,11 @@ public:
 	{
 		if (!writeBeg)
 			RemapWrite();
+
+		if (!writeBeg)
+		{
+			int a = 0;
+		}
 
 		while (size)
 		{
@@ -95,6 +100,11 @@ public:
 		if (!readBeg)
 			RemapRead();
 
+		if (!readBeg)
+		{
+			int a = 0;
+		}
+
 		while (size)
 		{
 			if (readCur + size > readEnd)
@@ -131,6 +141,11 @@ public:
 		if (!readBeg)
 			RemapRead();
 
+		if (!readBeg)
+		{
+			int a = 0;
+		}
+
 		while (size)
 		{
 			if (readPos >= curPos)
@@ -161,9 +176,10 @@ public:
 			}
 			else
 			{
-				char* temp = MapRandomAccess<char>(FILE_MAP_READ, curPos, size);
+				char* baseAddress = nullptr;
+				char* temp = MapRandomAccess<char>(baseAddress, FILE_MAP_READ, curPos, size);
 				memcpy(t, temp, size);
-				Unmap(temp);
+				Unmap(baseAddress);
 
 				size = 0;
 			}
@@ -174,6 +190,11 @@ public:
 	{
 		if (!writeBeg)
 			RemapWrite();
+
+		if (!writeBeg)
+		{
+			int a = 0;
+		}
 
 		while (size)
 		{

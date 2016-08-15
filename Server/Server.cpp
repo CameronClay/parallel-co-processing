@@ -24,7 +24,11 @@ void Server::WorkThread()
 			*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
 			DWORD64 cursor = 0;
-			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET); //needs sync if multiple threads
+
+			workLock.lock();
+			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET);
+			workLock.unlock();
+
 			if (wi.size)
 			{
 				workMap.Change(clint, wi);
@@ -37,7 +41,9 @@ void Server::WorkThread()
 			else
 			{
 				serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
-				tempFileMap.ReorderFileData();
+
+				if(DataInterp::ORDERED && workMap.Empty() && ++reorderCounter == 1)
+					tempFileMap.ReorderFileData();
 				return;
 			}
 
@@ -47,19 +53,21 @@ void Server::WorkThread()
 	}
 }
 
-Server::Server()
+Server::Server(uint32_t nThreads)
 	:
 	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(8KB, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
+	threadPool(nThreads),
+	reorderCounter(0),
 	exitThread(false)
 {
 	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
-	tempFileMap.Create(_T("NewData.dat"), Algorithm::GetOutSize(DataInterp::GetFileSize()));
+	tempFileMap.Create(_T("NewData.dat"), Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
 
 	//FileMisc::SetCurDirectory(L"Algorithms");
 	fileSend.Initialize();
-	workThread = std::thread(&Server::WorkThread, this);
+	threadPool.Initialize(&Server::WorkThread, this);
 }
 Server::~Server()
 {
@@ -69,7 +77,7 @@ Server::~Server()
 void Server::Shutdown()
 {
 	exitThread = true;
-	workThread.join();
+	threadPool.Wait();
 	serv->Shutdown();
 }
 
@@ -94,7 +102,9 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 				WorkInfo wi;
 				if (serv.workMap.GetClientWork(clint, wi))
 				{
-					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize()); // needs sync
+					serv.fileMapLock.lock();
+					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize());
+					serv.fileMapLock.unlock();
 
 					if (!serv.clntQueue.EvaluateClient(clint, time))
 					{
@@ -141,7 +151,11 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 	if (serv.workMap.GetClientWork(clint, wi))
 	{
 		//Client has work to be processed; give work to another client...
-		ClientData* clint = serv.clntQueue.FindClientForWork();
+		ClientData* client = nullptr;
+		do
+		{
+			client = serv.clntQueue.FindClientForWork();
+		} while (!client);
 
 		const uint32_t buffSize = wi.size + MSG_OFFSET;
 		auto sndBuff = tcpServ.GetSendBuffer(buffSize);
@@ -149,14 +163,17 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 		*(short*)(sndBuff.buffer + 1) = MSG_WORK_NEW;
 
 		DWORD64 cursor = 0;
+
+		serv.workLock.lock();
 		DataInterp::GetClientWorkPrev(sndBuff.buffer + MSG_OFFSET, buffSize, wi);
+		serv.workLock.unlock();
 
-		serv.workMap.Change(clint, wi);
+		serv.workMap.Change(client, wi);
 
-		*(TimePoint*)(clint->obj) = Clock::now();
+		*(TimePoint*)(client->obj) = Clock::now();
 
-		if (!tcpServ.SendClientData(sndBuff, buffSize, clint, true))
-			serv.workMap.Remove(clint);
+		if (!tcpServ.SendClientData(sndBuff, buffSize, client, true))
+			serv.workMap.Remove(client);
 	}
 }
 
