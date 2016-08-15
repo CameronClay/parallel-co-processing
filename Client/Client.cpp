@@ -4,10 +4,10 @@
 #include <GlobOps.h>
 #include <MsgHeader.h>
 
-Client::Client()
+Client::Client(uint64_t buffSize)
 {
-	const uint32_t outSizeMax = Algorithm::GetOutSize(8KB);
-	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(outSizeMax + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 2MB), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
+	const uint32_t outSizeMax = Algorithm::GetOutSize(buffSize);
+	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(outSizeMax + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 1MB), SocketOptions(), 10, 8, 2, 2, 30.0f, this);
 }
 Client::~Client()
 {

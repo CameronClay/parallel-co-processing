@@ -8,7 +8,9 @@
 void Server::WorkThread()
 {
 	WaitableTimer timer(true);
-	timer.Set(DataInterp::ACCEPTEDTIME);
+	timer.Set(DataInterp::WAITTIME);
+
+	const uint32_t chunkSize = DataInterp::GetChunkSize(), buffSize = chunkSize + MSG_OFFSET;
 
 	while (timer.Wait())
 	{
@@ -16,17 +18,14 @@ void Server::WorkThread()
 			return;
 
 		ClientData* clint = nullptr;
-		const uint32_t buffSize = DataInterp::GetChunkSize() + MSG_OFFSET;
 		while (clint = clntQueue.FindClientForWork())
 		{
 			auto sndBuff = serv->GetSendBuffer(buffSize);
 			*((short*)sndBuff.buffer) = TYPE_WORK;
 			*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
-			DWORD64 cursor = 0;
-
 			workLock.lock();
-			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, buffSize - MSG_OFFSET);
+			WorkInfo wi = DataInterp::GetClientWork(sndBuff.buffer + MSG_OFFSET, chunkSize);
 			workLock.unlock();
 
 			if (wi.size)
@@ -40,7 +39,7 @@ void Server::WorkThread()
 			}
 			else
 			{
-				serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
+ 				serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
 
 				if(DataInterp::ORDERED && workMap.Empty() && ++reorderCounter == 1)
 					tempFileMap.ReorderFileData();
@@ -53,9 +52,9 @@ void Server::WorkThread()
 	}
 }
 
-Server::Server(uint32_t nThreads)
+Server::Server(uint32_t nThreads, uint64_t buffSize)
 	:
-	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(8KB, 2MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
+	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(buffSize, 1MB), SocketOptions(), 10, 30, 35, 15, 10, MAXCLIENTS, 30.0f, this)),
 	fileSend(*serv),
 	clntQueue(MAXCLIENTS),
 	threadPool(nThreads),

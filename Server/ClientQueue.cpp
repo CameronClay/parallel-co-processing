@@ -40,11 +40,12 @@ bool ClientQueue::EvaluateClient(ClientData* clint, float time)
 ClientData* ClientQueue::FindClientForWork()
 {
 	ClientData* clint = nullptr;
-	do
-	{
-		if (!fastClients.pop(clint))
-			otherClients.pop(clint);
-	} while (clint && !clint->pc.IsConnected());
+	bool ret = fastClients.pop(clint); //for some reason occasionally clint is still valid if ret is false
+	if (!ret)
+		ret = otherClients.pop(clint);
 
-	return clint;
+	if (ret)
+		return clint;
+
+	return nullptr;
 }

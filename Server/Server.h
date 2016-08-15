@@ -13,7 +13,7 @@
 class Server
 {
 public:
-	Server(uint32_t nThreads = 2);
+	Server(uint32_t nThreads = 2, uint64_t buffSize = 32KB);
 	~Server();
 
 	void Shutdown();

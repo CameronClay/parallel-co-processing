@@ -2,11 +2,12 @@
 #include <Includes.h>
 #include <TCPClientInterface.h>
 #include <FileTransfer.h>
+#include <GlobOps.h>
 
 class Client
 {
 public:
-	Client();
+	Client(uint64_t buffSize = 32KB);
 	~Client();
 
 	TCPClientInterface* GetTCPClient() const;

@@ -66,7 +66,7 @@ int _tmain(int argc, TCHAR** argv)
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
 	atexit(OnExit);
 
-	Server server;
+	Server server{ 2, 32KB };
 
 	TCHAR buffer[512] = {};
 	CmdHandler cmdHandler;
