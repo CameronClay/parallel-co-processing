@@ -30,12 +30,12 @@ void GenerateData(const wchar_t* filename, size_t dataSize)
 	}	
 }
 
-bool VerifyNewData(const wchar_t* filename)
+bool VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename)
 {
 	static const uint32_t buffSize = 4096;
 	const uint32_t tempSize = Algorithm::GetOutSize(buffSize);
 	auto newBuff = std::make_unique<char[]>(buffSize), oldBuff = std::make_unique<char[]>(buffSize), tempBuff = std::make_unique<char[]>(tempSize);
-	File newData{ filename, GENERIC_READ }, oldData{ filename, GENERIC_READ };
+	File newData{ newFilename, GENERIC_READ }, oldData{ oldFilename, GENERIC_READ };
 	DWORD read = 0;
 	uint32_t size = 0;
 	while (true)
@@ -64,6 +64,10 @@ bool VerifyNewData(const wchar_t* filename)
 int _tmain(int argc, TCHAR** argv)
 {
 	srand(time(NULL));
-	GenerateData(L"Data.dat", 1MB);
-	//VerifyNewData(L"NewData.dat");
+	FileMisc::SetCurDirectory(L"..\\Server");
+	//GenerateData(L"Data.dat", 1MB);
+	bool verified = VerifyNewData(L"NewData.dat", L"Data.dat");
+	_tprintf(_T("Verified: %d\n"), verified);
+	TCHAR buffer[64];
+	_getts_s(buffer);
 }

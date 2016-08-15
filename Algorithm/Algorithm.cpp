@@ -9,8 +9,8 @@ uint32_t Algorithm::AlgorithmInOut(void* in, uint32_t inSize, void* out, uint32_
 	if (!in || !out || outSize < GetOutSize(inSize))
 		return 0;
 
-	inSize /= sizeof(uint32_t);
-	for (uint32_t *pin = (uint32_t*)in, *pout = (uint32_t*)out, *pend = ((uint32_t*)in) + inSize; pin != pend; ++pin, ++pout)
+	const uint32_t count = inSize / sizeof(uint32_t);
+	for (uint32_t *pin = (uint32_t*)in, *pout = (uint32_t*)out, *pend = ((uint32_t*)in) + count; pin != pend; ++pin, ++pout)
 	{
 		*pout = *pin * *pin;
 	}

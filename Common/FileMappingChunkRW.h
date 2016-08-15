@@ -19,6 +19,21 @@ public:
 		chunkMapSize(((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN) //Round to nearest FileMapping::ALLOCGRAN
 	{}
 
+	~FileMappingChunkRW()
+	{
+		Close();
+	}
+
+	void Close()
+	{
+		if (writeBeg)
+			Unmap(writeBeg);
+		if (readBeg)
+			Unmap(readBeg);
+
+		__super::Close();
+	}
+
 	bool Create(const TCHAR* filename, DWORD64 size)
 	{
 		chunkMapSize = min(chunkMapSize, size);
@@ -120,16 +135,17 @@ public:
 		{
 			if (readPos >= curPos)
 			{
-				if (curPos + size > (readCur - readEnd) + readPos)
+				const uint64_t startReadPos = GetReadPos(), endReadPos = startReadPos + (readEnd - readBeg);
+				if (curPos + size > endReadPos)
 				{
-					const size_t intersection = ((readCur - readEnd) + readPos) - (curPos + size);
+					const size_t intersection = (curPos + size) - endReadPos;
 					memcpy(t, readBeg + (curPos - readPos), intersection);
 
 					t += intersection;
 					size -= intersection;
 					RemapRead();
 				}
-				else if (curPos + size == (readCur - readEnd) + readPos)
+				else if (curPos + size == endReadPos)
 				{
 					memcpy(t, readBeg + (curPos - readPos), size);
 					RemapRead();
@@ -201,12 +217,12 @@ public:
 
 	uint64_t GetWritePos() const
 	{
-		return writePos + (writeEnd - writeCur);
+		return writePos + (writeCur - writeBeg);
 	}
 
 	uint64_t GetReadPos() const
 	{
-		return readPos + (readEnd - readCur);
+		return readPos + (readCur - readBeg);
 	}
 
 protected:
@@ -220,19 +236,33 @@ protected:
 private:
 	void RemapWrite()
 	{
-		if(writeBeg)
+		if (writeBeg)
+		{
 			Unmap(writeBeg);
-		writeCur = writeBeg = MapAllocGran<char>(FILE_MAP_WRITE, writePos, chunkMapSize);
+			writeCur = writeBeg = MapAllocGran<char>(FILE_MAP_WRITE, writePos, chunkMapSize);
+			writePos += chunkMapSize;
+		}
+		else
+		{
+			writeCur = writeBeg = MapAllocGran<char>(FILE_MAP_WRITE, writePos, chunkMapSize);
+		}
+
 		writeEnd = writeBeg + chunkMapSize;
-		writePos += chunkMapSize;
 	}
 
 	void RemapRead()
 	{
-		if(readBeg)
+		if (readBeg)
+		{
 			Unmap(readBeg);
-		readCur = readBeg = MapAllocGran<char>(FILE_MAP_READ, readPos, chunkMapSize);
+			readCur = readBeg = MapAllocGran<char>(FILE_MAP_READ, readPos, chunkMapSize);
+			readPos += chunkMapSize;
+		}
+		else
+		{
+			readCur = readBeg = MapAllocGran<char>(FILE_MAP_READ, readPos, chunkMapSize);
+		}
+
 		readEnd = readBeg + chunkMapSize;
-		readCur += chunkMapSize;
 	}
 };

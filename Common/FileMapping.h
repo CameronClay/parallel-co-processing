@@ -18,6 +18,8 @@ public:
 
 	void Close();
 
+	HANDLE GetHFile() const;
+
 	//desiredAccess = FILE_MAP_WRITE, FILE_MAP_READ, FILE_MAP_COPY, FILE_MAP_ALL_ACCESS
 	template<typename T>
 	T* MapAllocGran(DWORD desiredAccess, DWORD64 pos, size_t size)

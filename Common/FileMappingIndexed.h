@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <GlobOps.h>
+#include <Includes.h>
+#include <File.h>
 
 class FileMappingIndexed : public FileMappingChunkRW
 {
@@ -29,61 +31,18 @@ public:
 
 	void ReorderFileData()
 	{
-		char* p = nullptr;
 		uint64_t curPos = GetWritePos();
-		FileMappingChunkRW mp{ _T("NewData.dat"), curPos };
+		FileMappingChunkRW mp{ _T("TempData.dat"), curPos };
 		for (auto it = indices.begin(), end = indices.end(); it != end; ++it)
 		{
 			mp.Write(*this, it->pos, it->size);
 		}
-		//for (size_t pos = 0, endPos = chunkMapSize; pos < curPos; pos = endPos, endPos += chunkMapSize)
-		//{
-		//	if (indices.empty())
-		//		return;
+		mp.Close();
+		Close();
 
-		//	//Flush(p, chunkMapSize);
-		//	for (auto it = indices.begin(), end = indices.end(); it != end; ++it)
-		//	{
-		//		//need to handle case where pos isnt in chunk...
-		//		if (it->pos >= pos && it->pos + it->size < endPos)
-		//		{
-		//			//write to file at p + pos - it->pos
-
-		//			mp.Write(*this, it->pos,  it->size);
-		//			memcpy(curP, p + pos - it->pos, it->size);
-		//			it = indices.erase(it);
-		//		}
-		//		else
-		//		{
-		//			//LONG moveHigh = pos >> 32;
-		//			//SetFilePointer(hFile, pos & MAXDWORD, &moveHigh, FILE_BEGIN);
-		//			//char* buffer = new char[it->size];
-		//			//DWORD read = 0;
-		//			//ReadFile(hFile, buffer, it->size, &read, NULL);
-
-		//			////write to file
-		//			//delete[] buffer;
-		//		}
-		//	}
-		//}
+		FileMisc::Remove(L"NewData.dat");
+		FileMisc::MoveOrRename(L"TempData.dat", L"NewData.dat");
 	}
-	//uint32_t lastIndex = -1;
-	//for (auto it = indices.begin(), end = indices.end(); it != end; ++it)
-	//{
-	//	if (it->index != lastIndex + 1)
-	//	{
-	//		//const size_t size = it->curPos + it->size - indices.front().curPos;
-	//		//if ((it != indices.begin()) && (size > chunkMapSize))
-	//		//{
-	//		//	char* c  = MapRandomAccess<char>(FILE_MAP_READ, indices.front().curPos, size);
-	//		//	file.Write(c, size);
-	//		//	Unmap(c);
-	//		//	//erase all entries up to this point and copy data to actual file
-	//		//	indices.erase(indices.begin(), it);
-	//		//}
-	//		return;
-	//	}
-	//}
 private:
 	struct IndexEntry
 	{

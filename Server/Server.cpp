@@ -91,17 +91,21 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 			{
 				const float time = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - *(TimePoint*)clint->obj).count();
 
-				if (!serv.clntQueue.EvaluateClient(clint, time))
-				{
-					tcpServ.SendMsg(clint, true, TYPE_KICK, MSG_KICK_TOOSLOW);
-					tcpServ.DisconnectClient(clint);
-				}
-
 				WorkInfo wi;
 				if (serv.workMap.GetClientWork(clint, wi))
+				{
 					serv.tempFileMap.Write(wi.curIndex, streamReader.GetData(), streamReader.GetDataSize()); // needs sync
+
+					if (!serv.clntQueue.EvaluateClient(clint, time))
+					{
+						tcpServ.SendMsg(clint, true, TYPE_KICK, MSG_KICK_TOOSLOW);
+						tcpServ.DisconnectClient(clint);
+					}
+				}
 				else
+				{
 					tcpServ.DisconnectClient(clint);
+				}
 			}
 			break;
 		}

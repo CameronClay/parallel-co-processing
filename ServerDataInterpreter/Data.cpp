@@ -31,13 +31,13 @@ WorkInfo Data::GetClientWork(void* buffer, uint32_t buffSize)
 	if (buffSize < chunkSize)
 		return{};
 
-	WorkInfo wi;
-
-	wi.cursor = cursorPos;
-	wi.curIndex = curIndex++;
-	const uint32_t read = wi.size = file.Read(buffer, buffSize);
-	cursorPos += read;
-	return wi;
+	const uint32_t read = file.Read(buffer, buffSize);
+	if (read)
+	{
+		cursorPos += read;
+		return{ cursorPos, read, curIndex++ };
+	}
+	return {};
 }
 
 WorkInfo Data::GetClientWorkPrev(void* buffer, uint32_t buffSize, const WorkInfo& wi)

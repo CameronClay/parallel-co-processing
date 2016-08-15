@@ -46,9 +46,20 @@ bool FileMapping::Create(HANDLE hFile, DWORD protect, DWORD64 size)
 void FileMapping::Close()
 {
 	if (hMap)
+	{
 		CloseHandle(hMap);
+		hMap = NULL;
+	}
 	if (closeHFile && hFile)
+	{
 		CloseHandle(hFile);
+		hFile = NULL;
+	}
+}
+
+HANDLE FileMapping::GetHFile() const
+{
+	return hFile;
 }
 
 FileMapping::~FileMapping()
