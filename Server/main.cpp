@@ -61,6 +61,11 @@ void Do(int& a)
 
 int _tmain(int argc, TCHAR** argv)
 {
+	TCHAR temp[MAX_PATH] = {};
+	FileMisc::GetCurDirectory(temp);
+	_tcscat(temp, _T("\\Algorithms"));
+	SetDllDirectory(temp);
+
 	InitializeNetworking();
 
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
@@ -81,5 +86,7 @@ int _tmain(int argc, TCHAR** argv)
 
 	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
+
+	SetDllDirectory(NULL);
 	return 0;
 }

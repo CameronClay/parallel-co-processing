@@ -30,49 +30,10 @@ void GenerateData(const wchar_t* filename, size_t dataSize)
 	}	
 }
 
-bool VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename)
-{
-	static const uint32_t buffSize = 4096;
-	const uint32_t tempSize = Algorithm::GetOutSize(buffSize);
-	auto newBuff = std::make_unique<char[]>(buffSize), oldBuff = std::make_unique<char[]>(buffSize), tempBuff = std::make_unique<char[]>(tempSize);
-	File newData{ newFilename, GENERIC_READ }, oldData{ oldFilename, GENERIC_READ };
-	DWORD read = 0;
-	uint32_t size = 0;
-	while (true)
-	{
-		bool eof = false;
-		read = oldData.Read(oldBuff.get(), buffSize);
-		if (!read)
-			eof = true;
-		else
-			size = Algorithm::AlgorithmInOut(oldBuff.get(), buffSize, tempBuff.get(), tempSize);
-
-		read = newData.Read(newBuff.get(), size ? size : 1);
-		if (!read)
-		{
-			if (eof)
-				return true;
-			else 
-				return false;
-		}
-
-		if (memcmp(newBuff.get(), tempBuff.get(), size) != 0)
-			return false;
-	}
-}
-
 int _tmain(int argc, TCHAR** argv)
 {
-	srand(time(NULL));
+	srand((uint32_t)time(NULL));
 	FileMisc::SetCurDirectory(L"..\\Server");
 
-	//GenerateData(L"Data.dat", 10MB);
-
-	const bool verified = VerifyNewData(L"NewData.dat", L"Data.dat");
-	if(verified)
-		_tprintf(_T("Data Verified\n"), verified);
-	else
-		_tprintf(_T("Data not verified\n"), verified);
-
-	system("PAUSE");
+	GenerateData(L"Data.dat", 10MB);
 }

@@ -5,6 +5,42 @@
 #include <Chrono>
 #include <Algorithm.h>
 
+bool Server::VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename)
+{
+	static const uint32_t buffSize = 4096;
+
+	File newData{ newFilename, GENERIC_READ }, oldData{ oldFilename, GENERIC_READ };
+	if (!(newData.IsOpen() && oldData.IsOpen()))
+		return false;
+
+	const uint32_t tempSize = Algorithm::GetOutSize(buffSize);
+	auto newBuff = std::make_unique<char[]>(buffSize), oldBuff = std::make_unique<char[]>(buffSize), tempBuff = std::make_unique<char[]>(tempSize);
+
+	DWORD read = 0;
+	uint32_t size = 0;
+	while (true)
+	{
+		bool eof = false;
+		read = oldData.Read(oldBuff.get(), buffSize);
+		if (!read)
+			eof = true;
+		else
+			size = Algorithm::AlgorithmInOut(oldBuff.get(), buffSize, tempBuff.get(), tempSize);
+
+		read = newData.Read(newBuff.get(), size ? size : 1);
+		if (!read)
+		{
+			if (eof)
+				return true;
+			else
+				return false;
+		}
+
+		if (memcmp(newBuff.get(), tempBuff.get(), size) != 0)
+			return false;
+	}
+}
+
 void Server::WorkThread()
 {
 	WaitableTimer timer(true);
@@ -46,7 +82,9 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
 	tempFileMap.Create(_T("NewData.dat"), Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
 
-	//FileMisc::SetCurDirectory(L"Algorithms");
+	auto vect = FileMisc::GetFileNameList(L"Algorithms", 0, false);
+	fileSend.SetFileList(_T("Algorithms"), vect);
+
 	fileSend.Initialize();
 	threadPool.Initialize(&Server::WorkThread, this);
 }
@@ -91,8 +129,18 @@ bool Server::GiveNewWork(ClientData* clint)
 	{
 		serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
 
-		if (DataInterp::ORDERED && workMap.Empty() && ++reorderCounter == 1)
+		if (DataInterp::ORDERED && workMap.Empty() && oldWork.empty() && ++reorderCounter == 1)
+		{
+			_tprintf(_T("All data received; reordering...\n"));
 			tempFileMap.ReorderFileData();
+
+			_tprintf(_T("Data reordered; verifing...\n"));
+			const bool verified = Server::VerifyNewData(L"NewData.dat", L"Data.dat");
+			if (verified)
+				_tprintf(_T("Data Verified\n"));
+			else
+				_tprintf(_T("Data not verified\n"));
+		}
 
 		return false;
 	}
@@ -159,8 +207,7 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 			{
 				//Transfer algorithm to client
 				serv.fileSend.Wait();
-				auto vect = FileMisc::GetFileNameList(L"Algorithms", 0, false);
-				serv.fileSend.SendFiles(clint, vect);
+				serv.fileSend.SendFiles(clint);
 			}
 			break;
 			case MSG_READY_PROCESS:

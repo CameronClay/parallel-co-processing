@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <PFunc.h>
 
 #ifdef DLLEXPORT
 #define CLNTALGORITHM __declspec(dllexport)

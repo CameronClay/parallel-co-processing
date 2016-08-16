@@ -91,6 +91,9 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <DelayLoadDLLs>Algorithm.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -99,6 +102,9 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <DelayLoadDLLs>Algorithm.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -112,6 +118,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <DelayLoadDLLs>Algorithm.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,6 +133,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <DelayLoadDLLs>Algorithm.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

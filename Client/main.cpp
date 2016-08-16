@@ -21,8 +21,8 @@
 #elif defined _AMD64_
 #define ARCH "x64"
 #endif
-#pragma comment(lib, ARCH"/" CONF"/TCPCS") 
 
+#pragma comment(lib, ARCH"/" CONF"/TCPCS") 
 #pragma comment(lib, "Algorithm")
 
 BOOL CALLBACK ConsoleHandler(DWORD ctrlType);
@@ -53,6 +53,11 @@ void OnExit()
 
 int _tmain(int argc, TCHAR** argv)
 {
+	TCHAR temp[MAX_PATH] = {};
+	FileMisc::GetCurDirectory(temp);
+	_tcscat(temp, _T("\\Algorithms"));
+	SetDllDirectory(temp);
+
 	InitializeNetworking();
 
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
@@ -74,5 +79,6 @@ int _tmain(int argc, TCHAR** argv)
 
 	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
+	SetDllDirectory(NULL);
 	return 0;
 }

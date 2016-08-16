@@ -27,6 +27,8 @@ private:
 	friend static void DisconnectHandler(TCPServInterface& serv, ClientData* data, bool unexpected);
 	void WorkThread();
 
+	static bool VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename);
+
 	bool GiveNewWork(ClientData* clint);
 	void GiveOldWork(ClientData* clint, const WorkInfo& wi);
 

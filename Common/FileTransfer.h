@@ -15,10 +15,11 @@ public:
 	~FileSend();
 
 	void Initialize();
+	void SetFileList(const std::tstring& dir, const std::vector<FileMisc::FileData>& fileList);
 
-	void SendFiles(ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
+	void SendFiles(ClientData* clint);
 	void Wait();
-	void SendFilesAndWait(ClientData* clint, const std::vector<FileMisc::FileData>& fileList);
+	void SendFilesAndWait(ClientData* clint);
 	void StopSend();
 private:
 	enum ThreadState
@@ -31,6 +32,7 @@ private:
 
 	TCPServInterface& serv;
 	ClientData* clint;
+	std::tstring dir;
 	std::vector<FileMisc::FileData> fileList;
 	EventAutoReset startEv, finishedEv;
 	ThreadState threadState;
@@ -45,9 +47,12 @@ public:
 
 	//Returns true on completion
 	bool ReadFiles(MsgStreamReader& streamReader);
-	void OnCompletion();
 private:
+	bool AdvanceFile();
+	void OnCompletion();
+
 	std::vector<FileMisc::FileData> fileList;
+	std::tstring dir;
 	std::vector<FileMisc::FileData>::iterator curFile;
 	File file;
 };

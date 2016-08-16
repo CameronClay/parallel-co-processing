@@ -14,17 +14,23 @@ void FileSend::SendThread()
 		if (threadState == FileSend::RUNNING)
 		{
 			entered = true;
-			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
+			auto strm = serv.CreateOutStream(StreamWriter::SizeType(fileList, dir), TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
 			strm.Write(fileList);
+			strm.Write(dir);
 			serv.SendClientData(strm, clint, true);
 
 			if (threadState == FileSend::RUNNING)
 			{
-				for (auto& it : fileList)
+				for (const auto& it : fileList)
 				{
-					File file((std::wstring(L"Algorithms\\") + it.fileName).c_str(), GENERIC_READ);
+					File file;
+					if (dir.empty())
+						file.Open(it.fileName.c_str(), GENERIC_READ);
+					else
+						file.Open((dir + std::tstring(_T("\\")) + it.fileName).c_str(), GENERIC_READ);
 
-					while ((threadState == FileSend::RUNNING) && it.size)
+					DWORD64 size = it.size;
+					while ((threadState == FileSend::RUNNING) && size)
 					{
 						auto sndBuff = serv.GetSendBuffer(maxBuffSize);
 						*((short*)sndBuff.buffer) = TYPE_FILETRANSFER;
@@ -32,7 +38,7 @@ void FileSend::SendThread()
 
 						const DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
 						serv.SendClientData(sndBuff, read + MSG_OFFSET, clint, true);
-						it.size -= read;
+						size -= read;
 					}
 				}
 			}
@@ -60,13 +66,18 @@ void FileSend::Initialize()
 	thread = std::thread(&FileSend::SendThread, this);
 }
 
-void FileSend::SendFiles(ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
+void FileSend::SetFileList(const std::tstring& dir, const std::vector<FileMisc::FileData>& fileList)
+{
+	this->fileList = fileList;
+	this->dir = dir;
+}
+
+void FileSend::SendFiles(ClientData* clint)
 {
 	if (fileList.empty())
 		return;
 
 	this->clint = clint;
-	this->fileList = fileList;
 	threadState = RUNNING;
 	startEv.Set();
 }
@@ -76,9 +87,9 @@ void FileSend::Wait()
 	finishedEv.Wait();
 }
 
-void FileSend::SendFilesAndWait(ClientData* clint, const std::vector<FileMisc::FileData>& fileList)
+void FileSend::SendFilesAndWait(ClientData* clint)
 {
-	SendFiles(clint, fileList);
+	SendFiles(clint);
 	Wait();
 }
 
@@ -100,45 +111,60 @@ bool FileReceive::ReadFiles(MsgStreamReader& streamReader)
 	if (fileList.empty())
 	{
 		streamReader.Read(fileList);
+		streamReader.Read(dir);
+		if (!dir.empty())
+		{
+			dir.append(_T("\\"));
+			if (!FileMisc::Exists(dir.c_str()))
+				FileMisc::CreateFolder(dir.c_str());
+		}
+
 		curFile = fileList.begin();
+
+		if (dir.empty())
+			file.Open(curFile->fileName.c_str(), GENERIC_WRITE);
+		else
+			file.Open((dir + curFile->fileName).c_str(), GENERIC_WRITE);
+
+		if (AdvanceFile())
+			return true;
 	}
 	else
 	{
-		while (!curFile->size)
-		{
-			if (curFile != fileList.end() - 1)
-			{
-				++curFile;
-				file.Close();
-				file.Open(curFile->fileName.c_str(), GENERIC_WRITE);
-			}
-			else
-			{
-				OnCompletion();
-				return true;
-			}
-		}
-
 		const UINT size = streamReader.GetDataSize();
 		file.Write(streamReader.GetData(), size);
 		curFile->size -= size;
-		while (curFile->size == 0)
+
+		if (AdvanceFile())
+			return true;
+	}
+	return false;
+}
+
+bool FileReceive::AdvanceFile()
+{
+	while (!curFile->size)
+	{
+		if (curFile != fileList.end() - 1)
 		{
-			if (curFile != fileList.end() - 1)
-			{
-				++curFile;
-				file.Close();
+			++curFile;
+			file.ChangeDate(curFile->dateModified);
+			file.Close();
+
+			if (dir.empty())
 				file.Open(curFile->fileName.c_str(), GENERIC_WRITE);
-			}
 			else
-			{
-				OnCompletion();
-				return true;
-			}
+				file.Open((dir + curFile->fileName).c_str(), GENERIC_WRITE);
+		}
+		else
+		{
+			OnCompletion();
+			return true;
 		}
 	}
 	return false;
 }
+
 
 void FileReceive::OnCompletion()
 {
