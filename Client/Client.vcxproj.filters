@@ -45,6 +45,9 @@
     <ClCompile Include="Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdParser.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ThreadPool.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\CNLIB\GlobalNames.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>

@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\CmdParser.cpp" />
+    <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp" />
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileMapping.cpp" />
     <ClCompile Include="..\Common\FileTransfer.cpp" />
@@ -149,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="..\Common\CmdHandler.h" />
     <ClInclude Include="..\Common\CmdParser.h" />
+    <ClInclude Include="..\Common\CNLIB\GlobalNames.h" />
     <ClInclude Include="..\Common\Event.h" />
     <ClInclude Include="..\Common\FileMapping.h" />
     <ClInclude Include="..\Common\FileMappingChunkRW.h" />

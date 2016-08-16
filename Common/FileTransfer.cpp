@@ -145,10 +145,10 @@ bool FileReceive::AdvanceFile()
 {
 	while (!curFile->size)
 	{
+		file.ChangeDate(curFile->dateModified);
 		if (curFile != fileList.end() - 1)
 		{
 			++curFile;
-			file.ChangeDate(curFile->dateModified);
 			file.Close();
 
 			if (dir.empty())

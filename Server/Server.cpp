@@ -80,10 +80,10 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	exitThread(false)
 {
 	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
-	tempFileMap.Create(_T("NewData.dat"), Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
+	tempFileMap.Create(NEWDATANAME, Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
 
-	auto vect = FileMisc::GetFileNameList(L"Algorithms", 0, false);
-	fileSend.SetFileList(_T("Algorithms"), vect);
+	auto vect = FileMisc::GetFileNameList(ALGORITHMPATH, 0, false);
+	fileSend.SetFileList(ALGORITHMPATH, vect);
 
 	fileSend.Initialize();
 	threadPool.Initialize(&Server::WorkThread, this);
@@ -135,7 +135,7 @@ bool Server::GiveNewWork(ClientData* clint)
 			tempFileMap.ReorderFileData();
 
 			_tprintf(_T("Data reordered; verifing...\n"));
-			const bool verified = Server::VerifyNewData(L"NewData.dat", L"Data.dat");
+			const bool verified = Server::VerifyNewData(NEWDATANAME, DATANAME);
 			if (verified)
 				_tprintf(_T("Data Verified\n"));
 			else

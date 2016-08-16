@@ -1,9 +1,9 @@
 #include <tchar.h>
 #include <Includes.h>
 #include <File.h>
-#include <Algorithm.h>
 #include <ctime>
 #include <GlobOps.h>
+#include <GlobalNames.h>
 
 #ifdef _DEBUG
 #define CONF "Debug"
@@ -16,8 +16,6 @@
 #define ARCH "x64"
 #endif
 #pragma comment(lib, ARCH"/" CONF"/TCPCS") 
-
-#pragma comment(lib, "Algorithm")
 
 void GenerateData(const wchar_t* filename, size_t dataSize)
 {
@@ -35,5 +33,5 @@ int _tmain(int argc, TCHAR** argv)
 	srand((uint32_t)time(NULL));
 	FileMisc::SetCurDirectory(L"..\\Server");
 
-	GenerateData(L"Data.dat", 10MB);
+	GenerateData(DATANAME, 10MB);
 }

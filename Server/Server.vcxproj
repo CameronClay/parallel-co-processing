@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\CmdParser.cpp" />
+    <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp" />
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileMapping.cpp" />
     <ClCompile Include="..\Common\FileTransfer.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="..\Common\Algorithm.h" />
     <ClInclude Include="..\Common\CmdHandler.h" />
     <ClInclude Include="..\Common\CmdParser.h" />
+    <ClInclude Include="..\Common\CNLIB\GlobalNames.h" />
     <ClInclude Include="..\Common\DataInterp.h" />
     <ClInclude Include="..\Common\Event.h" />
     <ClInclude Include="..\Common\FileMapping.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
+    <ClInclude Include="..\Common\StreamExt2.h" />
     <ClInclude Include="..\Common\ThreadPool.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientQueue.h" />

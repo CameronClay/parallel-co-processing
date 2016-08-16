@@ -3,6 +3,7 @@
 #include <CmdParser.h>
 #include <CmdHandler.h>
 #include <FileTransfer.h>
+#include <GlobalNames.h>
 #include "ServerCmdParser.h"
 #include "Server.h"
 
@@ -61,9 +62,10 @@ void Do(int& a)
 
 int _tmain(int argc, TCHAR** argv)
 {
+	//FileMisc::GetCurDirectory(temp);
+	//_tcscat(temp, _T("\\Algorithms"));
 	TCHAR temp[MAX_PATH] = {};
-	FileMisc::GetCurDirectory(temp);
-	_tcscat(temp, _T("\\Algorithms"));
+	FileMisc::GetFullFilePathName(ALGORITHMPATH, temp);
 	SetDllDirectory(temp);
 
 	InitializeNetworking();

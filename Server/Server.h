@@ -8,6 +8,7 @@
 #include <MemPool.h>
 #include "ClientQueue.h"
 #include "ClientWorkMap.h"
+#include <GlobalNames.h>
 #include <mutex>
 
 class Server

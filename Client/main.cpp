@@ -5,6 +5,7 @@
 #include <FileTransfer.h>
 #include "ClientCmdParser.h"
 #include "Client.h"
+#include <GlobalNames.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -54,8 +55,7 @@ void OnExit()
 int _tmain(int argc, TCHAR** argv)
 {
 	TCHAR temp[MAX_PATH] = {};
-	FileMisc::GetCurDirectory(temp);
-	_tcscat(temp, _T("\\Algorithms"));
+	FileMisc::GetFullFilePathName(ALGORITHMPATH, temp);
 	SetDllDirectory(temp);
 
 	InitializeNetworking();
