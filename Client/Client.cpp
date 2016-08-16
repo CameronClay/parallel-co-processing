@@ -7,7 +7,7 @@
 Client::Client(uint64_t buffSize)
 {
 	const uint32_t outSizeMax = Algorithm::GetOutSize(buffSize);
-	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(outSizeMax + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 1MB), SocketOptions(0, 0, true), 10, 8, 2, 2, 30.0f, this);
+	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(outSizeMax + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 1MB, 9, 32KB), SocketOptions(0, 0, true), 10, 8, 2, 2, 30.0f, this);
 }
 Client::~Client()
 {

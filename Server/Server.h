@@ -27,6 +27,9 @@ private:
 	friend static void DisconnectHandler(TCPServInterface& serv, ClientData* data, bool unexpected);
 	void WorkThread();
 
+	bool GiveNewWork(ClientData* clint);
+	void GiveOldWork(ClientData* clint, const WorkInfo& wi);
+
 	TCPServInterface* serv;
 	ClientQueue clntQueue;
 	ClientWorkMap workMap;
@@ -35,5 +38,6 @@ private:
 	std::mutex fileMapLock, workLock;
 	ThreadPool threadPool;
 	std::atomic<uint32_t> reorderCounter;
+	boost::lockfree::queue<WorkInfo, boost::lockfree::fixed_sized<true>> oldWork;
 	std::atomic<bool> exitThread;
 };                   
