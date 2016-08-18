@@ -26,6 +26,8 @@ private:
 		EXITING
 	};
 	void SendThread();
+	bool SendFileList(ClientData* clint, uint32_t listSize);
+	bool SendFiles(ClientData* clint, uint32_t maxBuffSize);
 
 	TCPServInterface& serv;
 	std::tstring dir;

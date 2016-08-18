@@ -138,9 +138,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\CmdParser.cpp" />
-    <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp" />
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileMapping.cpp" />
+    <ClCompile Include="..\Common\GlobalNames.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
     <ClCompile Include="..\Common\WaitableTimer.cpp" />
     <ClCompile Include="ClientQueue.cpp" />
@@ -153,13 +153,13 @@
     <ClInclude Include="..\Common\Algorithm.h" />
     <ClInclude Include="..\Common\CmdHandler.h" />
     <ClInclude Include="..\Common\CmdParser.h" />
-    <ClInclude Include="..\Common\CNLIB\GlobalNames.h" />
     <ClInclude Include="..\Common\DataInterp.h" />
     <ClInclude Include="..\Common\Event.h" />
     <ClInclude Include="..\Common\FileMapping.h" />
     <ClInclude Include="..\Common\FileMappingChunkRW.h" />
     <ClInclude Include="..\Common\FileMappingIndexed.h" />
     <ClInclude Include="..\Common\Function.h" />
+    <ClInclude Include="..\Common\GlobalNames.h" />
     <ClInclude Include="..\Common\GlobOps.h" />
     <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />

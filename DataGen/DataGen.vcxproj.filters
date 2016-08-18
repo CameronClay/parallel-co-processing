@@ -24,12 +24,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp">
+    <ClCompile Include="..\Common\GlobalNames.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\CNLIB\GlobalNames.h">
+    <ClInclude Include="..\Common\GlobalNames.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
