@@ -2,12 +2,12 @@
 
 #include <Includes.h>
 #include <TCPServInterface.h>
-#include <FileTransfer.h>
 #include <FileMappingIndexed.h>
 #include <ThreadPool.h>
 #include <MemPool.h>
 #include "ClientQueue.h"
 #include "ClientWorkMap.h"
+#include "FileSend.h"
 #include <GlobalNames.h>
 #include <mutex>
 

@@ -2,7 +2,6 @@
 #include <TCPClientInterface.h>
 #include <CmdParser.h>
 #include <CmdHandler.h>
-#include <FileTransfer.h>
 #include "ClientCmdParser.h"
 #include "Client.h"
 #include <GlobalNames.h>

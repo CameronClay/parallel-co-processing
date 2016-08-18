@@ -2,7 +2,6 @@
 #include <TCPServInterface.h>
 #include <CmdParser.h>
 #include <CmdHandler.h>
-#include <FileTransfer.h>
 #include <GlobalNames.h>
 #include "ServerCmdParser.h"
 #include "Server.h"

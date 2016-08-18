@@ -1,9 +1,8 @@
 #pragma once
 #include <Includes.h>
 #include <TCPClientInterface.h>
-#include <FileTransfer.h>
 #include <GlobOps.h>
-//#include "AlgorithmAccess.h"
+#include "FileReceive.h"
 
 class Client
 {
@@ -15,7 +14,6 @@ public:
 private:
 	TCPClientInterface* clint;
 	FileReceive fileReceive;
-	//AlgorithmAccess algorithmAccess;
 
 	friend static void MsgHandler(TCPClientInterface& client, MsgStreamReader streamReader);
 	friend static void DisconnectHandler(TCPClientInterface& client, bool unexpected);

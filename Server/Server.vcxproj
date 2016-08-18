@@ -141,11 +141,11 @@
     <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp" />
     <ClCompile Include="..\Common\Event.cpp" />
     <ClCompile Include="..\Common\FileMapping.cpp" />
-    <ClCompile Include="..\Common\FileTransfer.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
     <ClCompile Include="..\Common\WaitableTimer.cpp" />
     <ClCompile Include="ClientQueue.cpp" />
     <ClCompile Include="ClientWorkMap.cpp" />
+    <ClCompile Include="FileSend.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
@@ -159,7 +159,6 @@
     <ClInclude Include="..\Common\FileMapping.h" />
     <ClInclude Include="..\Common\FileMappingChunkRW.h" />
     <ClInclude Include="..\Common\FileMappingIndexed.h" />
-    <ClInclude Include="..\Common\FileTransfer.h" />
     <ClInclude Include="..\Common\Function.h" />
     <ClInclude Include="..\Common\GlobOps.h" />
     <ClInclude Include="..\Common\MessagesExt.h" />
@@ -170,6 +169,7 @@
     <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientQueue.h" />
     <ClInclude Include="ClientWorkMap.h" />
+    <ClInclude Include="FileSend.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerCmdParser.h" />
   </ItemGroup>

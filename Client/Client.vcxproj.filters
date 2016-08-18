@@ -33,9 +33,6 @@
     <ClCompile Include="..\Common\Event.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\FileTransfer.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\WaitableTimer.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
@@ -47,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp">
       <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FileReceive.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,9 +77,6 @@
     <ClInclude Include="..\Common\MessagesExt.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\FileTransfer.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\WaitableTimer.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
@@ -103,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\CNLIB\GlobalNames.h">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FileReceive.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

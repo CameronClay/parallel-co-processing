@@ -33,9 +33,6 @@
     <ClCompile Include="..\Common\Event.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\FileTransfer.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -53,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\CNLIB\GlobalNames.cpp">
       <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSend.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,9 +75,6 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Event.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\FileTransfer.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="Server.h">
@@ -121,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\StreamExt2.h">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSend.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -72,7 +72,7 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	:
 	//																																			  NCOMPBUFF     NBUFF          MAXCON
 	serv(CreateServer(MsgHandler, ConnectHandler, DisconnectHandler, 5, BufferOptions(buffSize, 1MB, 9, 32KB), SocketOptions(0, 0, true), 10, 30, MAXCLIENTS, MAXCLIENTS, 10, MAXCLIENTS, 30.0f, this)),
-	fileSend(*serv),
+	fileSend(*serv, MAXCLIENTS),
 	clntQueue(MAXCLIENTS),
 	threadPool(nThreads),
 	reorderCounter(0),
@@ -82,10 +82,7 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
 	tempFileMap.Create(NEWDATANAME, Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
 
-	auto vect = FileMisc::GetFileNameList(ALGORITHMPATH, 0, false);
-	fileSend.SetFileList(ALGORITHMPATH, vect);
-
-	fileSend.Initialize();
+	fileSend.Initialize(ALGORITHMPATH, FileMisc::GetFileNameList(ALGORITHMPATH, 0, false));
 	threadPool.Initialize(&Server::WorkThread, this);
 }
 Server::~Server()
@@ -205,9 +202,9 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 		{
 			case MSG_READY_INITIALIZED:
 			{
+				//this could potentially slow down server due to the waiting
 				//Transfer algorithm to client
-				serv.fileSend.Wait();
-				serv.fileSend.SendFiles(clint);
+				serv.fileSend.QueueSend(clint);
 			}
 			break;
 			case MSG_READY_PROCESS:
