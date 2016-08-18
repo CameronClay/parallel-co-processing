@@ -39,10 +39,10 @@ void FileSend::SendThread()
 					while ((threadState.load(std::memory_order_acquire) == FileSend::RUNNING) && size)
 					{
 						auto sndBuff = serv.GetSendBuffer(maxBuffSize);
-						*((short*)sndBuff.buffer) = TYPE_FILETRANSFER;
-						*((short*)sndBuff.buffer + 1) = MSG_FILETRANSFER_SEND;
+						*(reinterpret_cast<short*>(sndBuff.buffer)) = TYPE_FILETRANSFER;
+						*(reinterpret_cast<short*>(sndBuff.buffer) + 1) = MSG_FILETRANSFER_SEND;
 
-						const DWORD read = file.Read((void*)(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
+						const DWORD read = file.Read(static_cast<void*>(sndBuff.buffer + MSG_OFFSET), maxBuffSize - MSG_OFFSET);
 						serv.SendClientData(sndBuff, read + MSG_OFFSET, clint, true);
 						size -= read;
 					}

@@ -116,8 +116,7 @@ bool Server::GiveNewWork(ClientData* clint)
 	if (wi.size)
 	{
 		workMap.Change(clint, wi);
-
-		*(TimePoint*)(clint->obj) = Clock::now();
+		*static_cast<TimePoint*>(clint->obj) = Clock::now();
 
 		if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
 			workMap.Remove(clint);
@@ -157,7 +156,7 @@ void Server::GiveOldWork(ClientData* clint, const WorkInfo& wi)
 
 	workMap.Change(clint, wi);
 
-	*(TimePoint*)(clint->obj) = Clock::now();
+	*static_cast<TimePoint*>(clint->obj) = Clock::now();
 
 	if (serv->SendClientData(sndBuff, buffSize, clint, true))
 		workMap.Remove(clint);
