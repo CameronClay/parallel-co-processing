@@ -1,8 +1,8 @@
 #pragma once
-
 #include <stdint.h>
 #include <GlobOps.h>
 #include <FileMapping.h>
+#include <UtilityFunctions.h>
 
 class FileMappingChunkRW : public FileMapping
 {
@@ -10,7 +10,7 @@ public:
 	FileMappingChunkRW(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS, const size_t chunkSize = 100MB)
 		:
 		FileMapping(filename, size, createFlags),
-		chunkMapSize(min(size, ((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN)) //Round to nearest FileMapping::ALLOCGRAN
+		chunkMapSize(min(size, UtilityFunctions::RoundToMultiple<size_t>(chunkSize, FileMapping::ALLOCGRAN))) //Round to nearest FileMapping::ALLOCGRAN
 	{}
 
 	FileMappingChunkRW(const size_t chunkSize = 100MB)

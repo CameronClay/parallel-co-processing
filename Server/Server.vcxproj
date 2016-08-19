@@ -146,6 +146,7 @@
     <ClCompile Include="ClientQueue.cpp" />
     <ClCompile Include="ClientWorkMap.cpp" />
     <ClCompile Include="FileSend.cpp" />
+    <ClCompile Include="FileSendDataBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
@@ -166,10 +167,12 @@
     <ClInclude Include="..\Common\PFunc.h" />
     <ClInclude Include="..\Common\StreamExt2.h" />
     <ClInclude Include="..\Common\ThreadPool.h" />
+    <ClInclude Include="..\Common\UtilityFunctions.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
     <ClInclude Include="ClientQueue.h" />
     <ClInclude Include="ClientWorkMap.h" />
     <ClInclude Include="FileSend.h" />
+    <ClInclude Include="FileSendDataBuffer.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerCmdParser.h" />
   </ItemGroup>

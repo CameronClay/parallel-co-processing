@@ -201,14 +201,22 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 		{
 			case MSG_READY_INITIALIZED:
 			{
-				//this could potentially slow down server due to the waiting
-				//Transfer algorithm to client
-				serv.fileSend.QueueSend(clint);
+				serv.fileSend.SendFileList(clint);
 			}
 			break;
 			case MSG_READY_PROCESS:
 			{
 				serv.clntQueue.AddClient(clint);
+			}
+			break;
+		}
+		break;
+	case TYPE_FILETRANSFER:
+		switch (msg)
+		{
+			case MSG_FILETRANSFER_SEND:
+			{
+				serv.fileSend.QueueSend(clint);
 			}
 			break;
 		}

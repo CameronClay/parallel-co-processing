@@ -14,9 +14,11 @@ public:
 
 	//Returns true on completion
 	bool ReadFiles(MsgStreamReader& streamReader);
+	bool HaveFileList(MsgStreamReader& streamReader);
 private:
 	bool AdvanceFile();
 	void OnCompletion();
+	bool InitFirstFile();
 
 	std::vector<FileMisc::FileData> fileList;
 	std::tstring dir;

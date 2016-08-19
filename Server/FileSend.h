@@ -17,6 +17,7 @@ public:
 
 	void Initialize(const std::tstring& dir, const std::vector<FileMisc::FileData>& fileList);
 
+	bool SendFileList(ClientData* clint);
 	void QueueSend(ClientData* clint);
 	void StopSend();
 private:
@@ -26,12 +27,12 @@ private:
 		EXITING
 	};
 	void SendThread();
-	bool SendFileList(ClientData* clint, uint32_t listSize);
 	bool SendFiles(ClientData* clint, uint32_t maxBuffSize);
 
 	TCPServInterface& serv;
 	std::tstring dir;
 	std::vector<FileMisc::FileData> fileList;
+	uint32_t fileListSize;
 	std::thread thread;
 	std::atomic<uint32_t> threadState;
 	boost::lockfree::queue<ClientData*, boost::lockfree::fixed_sized<true>> clientQueue;

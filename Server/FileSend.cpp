@@ -7,7 +7,6 @@
 void FileSend::SendThread()
 {
 	const UINT maxBuffSize = serv.GetBufferOptions().GetMaxDataBuffSize();
-	const uint32_t listSize = StreamWriter::SizeType(fileList, dir);
 
 	WaitableTimer timer(true);
 	timer.Set(DataInterp::WAITTIME);
@@ -17,20 +16,11 @@ void FileSend::SendThread()
 		ClientData* clint = nullptr;
 		while (clientQueue.pop(clint))
 		{
-			bool entered = false;
 			if (threadState.load(std::memory_order_acquire) == FileSend::RUNNING)
 			{
-				entered = true;
-
-				if (!SendFileList(clint, listSize))
-					break;
-
 				if (!SendFiles(clint, maxBuffSize))
-					break;
+					serv.SendMsg(clint, true, TYPE_FILETRANSFER, MSG_FILETRANSFER_ABORTED);
 			}
-
-			if (entered && (threadState.load(std::memory_order_acquire) != FileSend::RUNNING))
-				serv.SendMsg(clint, true, TYPE_FILETRANSFER, MSG_FILETRANSFER_ABORTED);
 		}
 	}
 }
@@ -50,6 +40,7 @@ void FileSend::Initialize(const std::tstring& dir, const std::vector<FileMisc::F
 {
 	this->dir = dir;
 	this->fileList = fileList;
+	fileListSize = StreamWriter::SizeType(fileList, dir);
 
 	thread = std::thread(&FileSend::SendThread, this);
 }
@@ -66,9 +57,9 @@ void FileSend::StopSend()
 		thread.join();
 }
 
-bool FileSend::SendFileList(ClientData* clint, uint32_t listSize)
+bool FileSend::SendFileList(ClientData* clint)
 {
-	auto strm = serv.CreateOutStream(listSize, TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
+	auto strm = serv.CreateOutStream(fileListSize, TYPE_FILETRANSFER, MSG_FILETRANSFER_LIST);
 	strm.Write(fileList);
 	strm.Write(dir);
 	if (!serv.SendClientData(strm, clint, true))

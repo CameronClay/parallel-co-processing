@@ -30,6 +30,18 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 	case TYPE_FILETRANSFER:
 		switch (msg)
 		{
+		case MSG_FILETRANSFER_LIST:
+			if (clint.fileReceive.HaveFileList(streamReader))
+			{
+				_tprintf(_T("Already have algorithm; ready to process...\n"));
+				tcpClient.SendMsg(TYPE_READY, MSG_READY_PROCESS);
+			}
+			else
+			{
+				_tprintf(_T("Algorithm not found requesting transfer...\n"));
+				tcpClient.SendMsg(TYPE_FILETRANSFER, MSG_FILETRANSFER_SEND);
+			}
+			break;
 		case MSG_FILETRANSFER_SEND:
 			if (clint.fileReceive.ReadFiles(streamReader))
 			{
