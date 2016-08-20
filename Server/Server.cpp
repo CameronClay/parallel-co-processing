@@ -4,6 +4,7 @@
 #include <DataInterp.h>
 #include <Chrono>
 #include <Algorithm.h>
+#include <PoolAlloc.h>
 
 bool Server::VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename)
 {
@@ -46,6 +47,9 @@ void Server::WorkThread()
 	WaitableTimer timer(true);
 	timer.Set(DataInterp::WAITTIME);
 
+	//Used to lock reduce contention between threads
+	PoolAlloc poolAlloc{ serv->GetBufferOptions().GetMaxDataBuffSize(), MAXCLIENTS };
+
 	while (timer.Wait())
 	{
 		if (exitThread.load(std::memory_order_acquire))
@@ -57,9 +61,9 @@ void Server::WorkThread()
 			//If there is any old work to process, process that if not, give out new work
 			WorkInfo wi;
 			if (oldWork.pop(wi))
-				GiveOldWork(clint, wi);
+				GiveOldWork(&poolAlloc, clint, wi);
 			else
-				if (!GiveNewWork(clint))
+				if (!GiveNewWork(&poolAlloc, clint))
 					return;
 
 			if (exitThread.load(std::memory_order_acquire))
@@ -102,10 +106,10 @@ TCPServInterface* Server::GetTCPServ() const
 	return serv;
 }
 
-bool Server::GiveNewWork(ClientData* clint)
+bool Server::GiveNewWork(BuffAllocator* alloc, ClientData* clint)
 {
 	const uint32_t chunkSize = DataInterp::GetChunkSize(), buffSize = chunkSize + MSG_OFFSET;
-	auto sndBuff = serv->GetSendBuffer(buffSize);
+	auto sndBuff = serv->GetSendBuffer(alloc, buffSize, NOCOMPRESSION);
 	*((short*)sndBuff.buffer) = TYPE_WORK;
 	*((short*)sndBuff.buffer + 1) = MSG_WORK_NEW;
 
@@ -116,6 +120,7 @@ bool Server::GiveNewWork(ClientData* clint)
 	if (wi.size)
 	{
 		workMap.Change(clint, wi);
+		
 		*static_cast<TimePoint*>(clint->obj) = Clock::now();
 
 		if (!serv->SendClientData(sndBuff, wi.size + MSG_OFFSET, clint, true))
@@ -143,10 +148,10 @@ bool Server::GiveNewWork(ClientData* clint)
 	return true;
 }
 
-void Server::GiveOldWork(ClientData* clint, const WorkInfo& wi)
+void Server::GiveOldWork(BuffAllocator* alloc, ClientData* clint, const WorkInfo& wi)
 {
 	const uint32_t buffSize = wi.size + MSG_OFFSET;
-	auto sndBuff = serv->GetSendBuffer(buffSize);
+	auto sndBuff = serv->GetSendBuffer(alloc, buffSize);
 	*(short*)(sndBuff.buffer) = TYPE_WORK;
 	*(short*)(sndBuff.buffer + 1) = MSG_WORK_NEW;
 

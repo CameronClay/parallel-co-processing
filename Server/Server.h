@@ -30,8 +30,8 @@ private:
 
 	static bool VerifyNewData(const wchar_t* newFilename, const wchar_t* oldFilename);
 
-	bool GiveNewWork(ClientData* clint);
-	void GiveOldWork(ClientData* clint, const WorkInfo& wi);
+	bool GiveNewWork(BuffAllocator* alloc, ClientData* clint);
+	void GiveOldWork(BuffAllocator* alloc, ClientData* clint, const WorkInfo& wi);
 
 	TCPServInterface* serv;
 	ClientQueue clntQueue;

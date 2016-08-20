@@ -146,6 +146,7 @@
     <ClCompile Include="..\Common\FileMapping.cpp" />
     <ClCompile Include="..\Common\GlobalNames.cpp" />
     <ClCompile Include="..\Common\ParamParser.cpp" />
+    <ClCompile Include="..\Common\PoolAlloc.cpp" />
     <ClCompile Include="..\Common\WaitableTimer.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="FileReceive.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\Common\MessagesExt.h" />
     <ClInclude Include="..\Common\ParamParser.h" />
     <ClInclude Include="..\Common\PFunc.h" />
+    <ClInclude Include="..\Common\PoolAlloc.h" />
     <ClInclude Include="..\Common\StreamExt2.h" />
     <ClInclude Include="..\Common\ThreadPool.h" />
     <ClInclude Include="..\Common\WaitableTimer.h" />
