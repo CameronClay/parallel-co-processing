@@ -54,11 +54,6 @@ void OnExit()
 	CleanupNetworking();
 }
 
-void Do(int& a)
-{
-	a += 5;
-}
-
 int _tmain(int argc, TCHAR** argv)
 {
 	//FileMisc::GetCurDirectory(temp);
