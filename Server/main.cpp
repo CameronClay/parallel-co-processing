@@ -85,6 +85,7 @@ int _tmain(int argc, TCHAR** argv)
 		_getts_s(buffer, 512);
 	} while (cmdHandler.Process(buffer));
 
+	server.Shutdown();
 	CleanupNetworking();
 	assert(SetConsoleCtrlHandler(ConsoleHandler, FALSE));
 

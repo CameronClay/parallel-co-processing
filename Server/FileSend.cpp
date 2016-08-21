@@ -14,13 +14,17 @@ void FileSend::SendThread()
 	while (timer.Wait())
 	{
 		ClientData* clint = nullptr;
-		while (clientQueue.pop(clint))
+		if (threadState.load(std::memory_order_acquire) == FileSend::RUNNING)
 		{
-			if (threadState.load(std::memory_order_acquire) == FileSend::RUNNING)
+			while (clientQueue.pop(clint))
 			{
 				if (!SendFiles(clint, maxBuffSize))
 					serv.SendMsg(clint, true, TYPE_FILETRANSFER, MSG_FILETRANSFER_ABORTED);
 			}
+		}
+		else
+		{
+			return;
 		}
 	}
 }

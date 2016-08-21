@@ -91,14 +91,17 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 }
 Server::~Server()
 {
-	DestroyServer(serv);
+	Shutdown();
 }
 
 void Server::Shutdown()
 {
-	exitThread = true;
-	threadPool.Wait();
-	serv->Shutdown();
+	if (!exitThread.load(std::memory_order_acquire))
+	{
+		exitThread = true;
+		threadPool.Wait();
+		DestroyServer(serv);
+	}
 }
 
 TCPServInterface* Server::GetTCPServ() const
