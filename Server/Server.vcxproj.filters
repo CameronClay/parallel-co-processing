@@ -131,5 +131,8 @@
     <ClInclude Include="..\Common\PoolAlloc.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
+    <ClInclude Include="StandardDeviation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

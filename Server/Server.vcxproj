@@ -179,6 +179,7 @@
     <ClInclude Include="FileSend.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerCmdParser.h" />
+    <ClInclude Include="StandardDeviation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

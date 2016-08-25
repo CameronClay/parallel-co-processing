@@ -5,7 +5,7 @@ ClientQueue::ClientQueue(uint32_t maxClients)
 	:
 	fastClients(maxClients),
 	otherClients(maxClients),
-	timePool(sizeof(uint32_t), maxClients)
+	timePool(sizeof(TimePoint), maxClients)
 {}
 
 ClientQueue::~ClientQueue()

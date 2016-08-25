@@ -16,7 +16,7 @@ public:
 	FileMappingChunkRW(const size_t chunkSize = 100MB)
 		:
 		FileMapping(),
-		chunkMapSize(((chunkSize + FileMapping::ALLOCGRAN - 1) / FileMapping::ALLOCGRAN) * FileMapping::ALLOCGRAN) //Round to nearest FileMapping::ALLOCGRAN
+		chunkMapSize(UtilityFunctions::RoundToMultiple<size_t>(chunkSize, FileMapping::ALLOCGRAN)) //Round to nearest FileMapping::ALLOCGRAN
 	{}
 
 	~FileMappingChunkRW()
@@ -36,8 +36,8 @@ public:
 
 	bool Create(const TCHAR* filename, DWORD64 size, DWORD createFlags = OPEN_ALWAYS)
 	{
-		chunkMapSize = min(chunkMapSize, size, createFlags);
-		return __super::Create(filename, size);
+		chunkMapSize = min(chunkMapSize, size);
+		return __super::Create(filename, size, createFlags);
 	}
 	bool Create(DWORD64 size) 	//Backed by system page instead of file
 	{
