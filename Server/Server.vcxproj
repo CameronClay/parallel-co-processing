@@ -152,7 +152,9 @@
     <ClCompile Include="ClientWorkMap.cpp" />
     <ClCompile Include="FileSend.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PerformanceModel.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="StandardDeviation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Algorithm.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="ClientQueue.h" />
     <ClInclude Include="ClientWorkMap.h" />
     <ClInclude Include="FileSend.h" />
+    <ClInclude Include="PerformanceModel.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerCmdParser.h" />
     <ClInclude Include="StandardDeviation.h" />

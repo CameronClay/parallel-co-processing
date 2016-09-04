@@ -26,10 +26,12 @@ void ClientQueue::RemoveClient(ClientData* clint)
 
 bool ClientQueue::EvaluateClient(ClientData* clint, float time)
 {
-	if (time > DataInterp::MAXTIME)
+	auto res = perfModel.EvaluateTime(time);
+
+	if (res == PerformanceModel::TOOSLOW)
 		return false;
 
-	if (time <= DataInterp::ACCEPTEDTIME)
+	if (res == PerformanceModel::FAST)
 		fastClients.push(clint);
 	else
 		otherClients.push(clint);
@@ -40,7 +42,7 @@ bool ClientQueue::EvaluateClient(ClientData* clint, float time)
 ClientData* ClientQueue::FindClientForWork()
 {
 	ClientData* clint = nullptr;
-	bool ret = fastClients.pop(clint); //for some reason occasionally clint is still valid if ret is false
+	bool ret = fastClients.pop(clint);
 	if (!ret)
 		ret = otherClients.pop(clint);
 

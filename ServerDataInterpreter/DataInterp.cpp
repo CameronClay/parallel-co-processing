@@ -15,8 +15,6 @@
 
 Data data;
 
-SERVDLL const float DataInterp::ACCEPTEDTIME = 750.0f;
-SERVDLL const float DataInterp::MAXTIME = DataInterp::ACCEPTEDTIME * DataInterp::ACCEPTEDTIME;
 SERVDLL const uint32_t DataInterp::WAITTIME = 15;
 SERVDLL const bool DataInterp::ORDERED = true;
 

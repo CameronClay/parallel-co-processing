@@ -57,6 +57,12 @@
     <ClCompile Include="..\Common\PoolAlloc.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="StandardDeviation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PerformanceModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CmdParser.h">
@@ -132,6 +138,9 @@
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="StandardDeviation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PerformanceModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

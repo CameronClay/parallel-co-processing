@@ -5,6 +5,7 @@
 #include <MemPool.h>
 #include <boost/lockfree/queue.hpp>
 #include <chrono>
+#include "PerformanceModel.h"
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::time_point<Clock> TimePoint;
@@ -22,6 +23,7 @@ public:
 	ClientData* FindClientForWork();
 private:
 	boost::lockfree::queue<ClientData*, boost::lockfree::fixed_sized<true>> fastClients, otherClients;
+	PerformanceModel perfModel;;
 
 	MemPoolSync<> timePool;
 };
