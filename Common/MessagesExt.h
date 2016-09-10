@@ -13,4 +13,5 @@
 #define MSG_WORK_COMPLETE 1
 
 #define TYPE_READY 3
-#define MSG_READY_PROCESS 0
+#define MSG_READY_INIT 0
+#define MSG_READY_PROCESS 1

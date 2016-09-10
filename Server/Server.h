@@ -21,7 +21,7 @@ public:
 
 	TCPServInterface* GetTCPServ() const;
 private:
-	static const uint32_t MAXCLIENTS = 8;
+	static const uint32_t MAXCLIENTS = 1000;
 
 	friend static void MsgHandler(TCPServInterface& serv, ClientData* const clint, MsgStreamReader streamReader);
 	friend static void ConnectHandler(TCPServInterface& serv, ClientData* data);
@@ -46,5 +46,5 @@ private:
 	boost::lockfree::queue<WorkInfo, boost::lockfree::fixed_sized<true>> oldWork;
 	TimePoint startTime;
 	std::atomic<uint32_t> nReady;
-	std::atomic<bool> exitThread;
+	std::atomic<bool> threadInitialized, exitThread;
 };                   

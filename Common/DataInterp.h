@@ -31,5 +31,6 @@ namespace DataInterp
 	SERVDLL WorkInfo GetClientWorkPrev(void* out, uint32_t buffSize, const WorkInfo& wi);
 
 	extern SERVDLL const uint32_t WAITTIME;
+	extern SERVDLL const uint32_t BUFFERSIZE;
 	extern SERVDLL const bool ORDERED;
 };

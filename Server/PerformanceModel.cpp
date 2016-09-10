@@ -1,8 +1,9 @@
 #include "PerformanceModel.h"
 
-PerformanceModel::PerformanceModel(uint32_t nStandardDeviations)
+PerformanceModel::PerformanceModel(uint32_t nSDHigh, uint32_t nSDLow)
 	:
-	nStandardDeviations(nStandardDeviations)
+	nSDHigh(nSDHigh),
+	nSDLow(nSDLow)
 {}
 
 auto PerformanceModel::EvaluateTime(float time) -> Status
@@ -11,10 +12,9 @@ auto PerformanceModel::EvaluateTime(float time) -> Status
 	if (data.mean == 0)
 		return NORMAL;
 
-	const double diff = data.sd * nStandardDeviations;
-	if (time <= data.mean - diff)
+	if (time <= data.mean - data.sd * nSDHigh)
 		return FAST;
-	else if (time > data.mean + diff)
+	else if (time > data.mean + data.sd * nSDLow)
 		return TOOSLOW;
 
 	return NORMAL;

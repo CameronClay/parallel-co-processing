@@ -1,4 +1,5 @@
 #include <DataInterp.h>
+#include <GlobOps.h>
 #include "Data.h"
 
 #ifdef _DEBUG
@@ -16,6 +17,7 @@
 Data data;
 
 SERVDLL const uint32_t DataInterp::WAITTIME = 15;
+SERVDLL const uint32_t DataInterp::BUFFERSIZE = 16KB;
 SERVDLL const bool DataInterp::ORDERED = true;
 
 void DataInterp::LoadData(uint32_t expectedClientCount, uint32_t desiredChunkSize)

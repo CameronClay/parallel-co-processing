@@ -20,23 +20,22 @@ Client::~Client()
 
 bool Client::Connect(const LIB_TCHAR* dest, const LIB_TCHAR* port, bool ipv6, float timeOut)
 {
-	bool res = true;
 	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
-		res &= (*clint)->Connect(dest, port, ipv6, timeOut);
+		if (!(*clint)->Connect(dest, port, ipv6, timeOut))
+			return false;
 
-	return res;
+	return true;
 }
 
 bool Client::RecvServData(DWORD nThreads, DWORD nConcThreads)
 {
-	bool res = true;
 	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
-		res &= (*clint)->RecvServData(nThreads, nConcThreads);
+		if (!(*clint)->RecvServData(nThreads, nConcThreads))
+			return false;
 
-	if(res)
-		(*clints.get())->SendMsg(TYPE_FILETRANSFER, MSG_FILETRANSFER_LIST);
+	(*clints.get())->SendMsg(TYPE_FILETRANSFER, MSG_FILETRANSFER_LIST);
 
-	return res;
+	return true;
 }
 
 void Client::Disconnect()
@@ -48,7 +47,7 @@ void Client::Disconnect()
 void Client::SignalReady()
 {
 	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
-		(*clint)->SendMsg(TYPE_READY, MSG_READY_PROCESS);
+		(*clint)->SendMsg(TYPE_READY, MSG_READY_INIT);
 }
 
 void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)

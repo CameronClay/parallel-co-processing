@@ -68,6 +68,7 @@ int _tmain(int argc, TCHAR** argv)
 	_tscanf(_T("%u"), &nClients);
 	_getts_s(buffer, 512);
 
+	// 64KB buffer is a guess
 	Client client{ nClients, 64KB };
 
 	CmdHandler cmdHandler;

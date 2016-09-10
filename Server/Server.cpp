@@ -81,6 +81,7 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	threadPool(nThreads),
 	reorderCounter(0),
 	oldWork(MAXCLIENTS),
+	threadInitialized(false),
 	exitThread(false),
 	nReady(0)
 {
@@ -180,7 +181,7 @@ void Server::OnCompletion()
 	_tprintf(_T("Time taken to reorder data:  %.5f\n"), reorderTime);
 	startTime = endTime;
 
-	_tprintf(_T("FINAL TIME = processTime + reorderTime, taken to verify data:  %.5f\n"), processTime + reorderTime);
+	_tprintf(_T("FINAL TIME = processTime + reorderTime:  %.5f\n"), processTime + reorderTime);
 
 	_tprintf(_T("Data reordered; verifing...\n"));
 	const bool verified = Server::VerifyNewData(NEWDATANAME, DATANAME);
@@ -232,14 +233,22 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 	case TYPE_READY:
 		switch (msg)
 		{
-			case MSG_READY_PROCESS:
+			case MSG_READY_INIT:
 			{
 				serv.clntQueue.AddClient(clint);
-				if (++serv.nReady >= Server::MAXCLIENTS)
+				bool inited = serv.threadInitialized.load(std::memory_order_acquire);
+
+				if (!inited && serv.threadInitialized.compare_exchange_strong(inited, true, std::memory_order_acq_rel))
 				{
 					serv.threadPool.Initialize(&Server::WorkThread, &serv);
 					serv.startTime = Clock::now();
 				}
+			}
+			break;
+
+			case MSG_READY_PROCESS:
+			{
+				serv.clntQueue.AddClient(clint);
 			}
 			break;
 		}

@@ -12,10 +12,10 @@ public:
 		TOOSLOW
 	};
 
-	PerformanceModel(uint32_t nStandardDeviations = 3);
+	PerformanceModel(uint32_t nSDHigh = 2, uint32_t nSDLow = 4);
 
 	Status EvaluateTime(float time);
 private:
 	StandardDeviation sd;
-	uint32_t nStandardDeviations;
+	uint32_t nSDHigh, nSDLow;
 };

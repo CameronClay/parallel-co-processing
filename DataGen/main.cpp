@@ -33,5 +33,5 @@ int _tmain(int argc, TCHAR** argv)
 	srand((uint32_t)time(NULL));
 	FileMisc::SetCurDirectory(L"..\\Server");
 
-	GenerateData(DATANAME, 10MB);
+	GenerateData(DATANAME, 25MB);
 }
