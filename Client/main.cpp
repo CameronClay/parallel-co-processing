@@ -54,6 +54,7 @@ void OnExit()
 int _tmain(int argc, TCHAR** argv)
 {
 	TCHAR temp[MAX_PATH] = {};
+	TCHAR buffer[512] = {};
 	FileMisc::GetFullFilePathName(ALGORITHMPATH, temp);
 	SetDllDirectory(temp);
 
@@ -62,13 +63,17 @@ int _tmain(int argc, TCHAR** argv)
 	assert(SetConsoleCtrlHandler(ConsoleHandler, TRUE));
 	atexit(OnExit);
 
-	Client client{ 64KB };
+	uint32_t nClients = 0;
+	_tprintf(_T("Input number of clients you would like to work with: "));
+	_tscanf(_T("%u"), &nClients);
+	_getts_s(buffer, 512);
 
-	TCHAR buffer[512] = {};
+	Client client{ nClients, 64KB };
+
 	CmdHandler cmdHandler;
-	cmdHandler.AddCmd<ConnectParser>(_T("connect"), client.GetTCPClient());
-	cmdHandler.AddCmd<RecvServDataParser>(_T("recvdata"), client.GetTCPClient());
-	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), client.GetTCPClient());
+	cmdHandler.AddCmd<ConnectParser>(_T("connect"), std::ref(client));
+	cmdHandler.AddCmd<RecvServDataParser>(_T("recvdata"), std::ref(client));
+	cmdHandler.AddCmd<DisconnectParser>(_T("disconnect"), std::ref(client));
 
 	do
 	{

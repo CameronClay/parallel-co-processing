@@ -3,6 +3,7 @@
 #include <ParamParser.h>
 #include <TCPClientInterface.h>
 #include <MessagesExt.h>
+#include "Client.h"
 
 class ConnectParser : public ParamParser
 {
@@ -43,9 +44,9 @@ private:
 	{
 		_tprintf(_T("Usage: -ip=IP address -p=port -ipv6=true/false[false] [-t=timesec[5.0]]\n"));
 	}
-	void Execute(TCPClientInterface* clint)
+	void Execute(Client& clint)
 	{
-		const bool res = clint->Connect(ip, port, ipv6, timeout);
+		const bool res = clint.Connect(ip, port, ipv6, timeout);
 		if (res)
 			_tprintf(_T("Successfully connected to %s on port %s\n"), ip, port);
 		else
@@ -88,16 +89,13 @@ private:
 	{
 		_tprintf(_T("Usage: [-nt=nThreads[2] -nct=nConcThreads[1]]\n"));
 	}
-	void Execute(TCPClientInterface* clint)
+	void Execute(Client& clint)
 	{
-		const bool res = clint->RecvServData(nThreads, nConcThreads);
+		const bool res = clint.RecvServData(nThreads, nConcThreads);
 		if (res)
 			_tprintf(_T("Now receiving data from serv\n"));
 		else
 			_tprintf(_T("Failed to receive data from serv\n"));
-
-		if (res)
-			clint->SendMsg(TYPE_READY, MSG_READY_INITIALIZED);
 	}
 
 	DWORD nThreads, nConcThreads;
@@ -121,8 +119,8 @@ private:
 	{
 		_tprintf(_T("Usage: \n"));
 	}
-	void Execute(TCPClientInterface* clint)
+	void Execute(Client& clint)
 	{
-		clint->Disconnect();
+		clint.Disconnect();
 	}
 };

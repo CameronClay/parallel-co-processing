@@ -4,18 +4,51 @@
 #include <MsgHeader.h>
 #include <Algorithm.h>
 
-Client::Client(uint64_t buffSize)
+Client::Client(uint32_t nClients, uint64_t buffSize)
+	:
+	nClients(nClients),
+	clints(new TCPClientInterface*[nClients])
 {
-	clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(buffSize + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 1MB, 9, 32KB), SocketOptions(0, 0, true), 10, 8, 2, 2, 30.0f, this);
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		*clint = CreateClient(MsgHandler, DisconnectHandler, 5, BufferOptions(buffSize + sizeof(size_t) + sizeof(DataHeader) + MSG_OFFSET, 1MB, 9, 32KB), SocketOptions(0, 0, true), 10, 8, 2, 2, 30.0f, this);
 }
 Client::~Client()
 {
-	DestroyClient(clint);
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		DestroyClient(*clint);
 }
 
-TCPClientInterface* Client::GetTCPClient() const
+bool Client::Connect(const LIB_TCHAR* dest, const LIB_TCHAR* port, bool ipv6, float timeOut)
 {
-	return clint;
+	bool res = true;
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		res &= (*clint)->Connect(dest, port, ipv6, timeOut);
+
+	return res;
+}
+
+bool Client::RecvServData(DWORD nThreads, DWORD nConcThreads)
+{
+	bool res = true;
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		res &= (*clint)->RecvServData(nThreads, nConcThreads);
+
+	if(res)
+		(*clints.get())->SendMsg(TYPE_FILETRANSFER, MSG_FILETRANSFER_LIST);
+
+	return res;
+}
+
+void Client::Disconnect()
+{
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		(*clint)->Disconnect();
+}
+
+void Client::SignalReady()
+{
+	for (TCPClientInterface **clint = clints.get(), **end = clint + nClients; clint != end; ++clint)
+		(*clint)->SendMsg(TYPE_READY, MSG_READY_PROCESS);
 }
 
 void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
@@ -34,7 +67,7 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 			if (clint.fileReceive.HaveFileList(streamReader))
 			{
 				_tprintf(_T("Already have algorithm; ready to process...\n"));
-				tcpClient.SendMsg(TYPE_READY, MSG_READY_PROCESS);
+				clint.SignalReady();
 			}
 			else
 			{
@@ -46,7 +79,7 @@ void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader)
 			if (clint.fileReceive.ReadFiles(streamReader))
 			{
 				_tprintf(_T("Algorithm received; ready to process...\n"));
-				tcpClient.SendMsg(TYPE_READY, MSG_READY_PROCESS);
+				clint.SignalReady();
 			}
 			break;
 		case MSG_FILETRANSFER_ABORTED:

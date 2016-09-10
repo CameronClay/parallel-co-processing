@@ -21,7 +21,7 @@ public:
 
 	TCPServInterface* GetTCPServ() const;
 private:
-	static const uint32_t MAXCLIENTS = 1000;
+	static const uint32_t MAXCLIENTS = 8;
 
 	friend static void MsgHandler(TCPServInterface& serv, ClientData* const clint, MsgStreamReader streamReader);
 	friend static void ConnectHandler(TCPServInterface& serv, ClientData* data);
@@ -33,6 +33,8 @@ private:
 	bool GiveNewWork(BuffAllocator* alloc, ClientData* clint);
 	void GiveOldWork(BuffAllocator* alloc, ClientData* clint, const WorkInfo& wi);
 
+	void OnCompletion();
+
 	TCPServInterface* serv;
 	ClientQueue clntQueue;
 	ClientWorkMap workMap;
@@ -42,5 +44,7 @@ private:
 	ThreadPool threadPool;
 	std::atomic<uint32_t> reorderCounter;
 	boost::lockfree::queue<WorkInfo, boost::lockfree::fixed_sized<true>> oldWork;
+	TimePoint startTime;
+	std::atomic<uint32_t> nReady;
 	std::atomic<bool> exitThread;
 };                   

@@ -81,13 +81,14 @@ Server::Server(uint32_t nThreads, uint64_t buffSize)
 	threadPool(nThreads),
 	reorderCounter(0),
 	oldWork(MAXCLIENTS),
-	exitThread(false)
+	exitThread(false),
+	nReady(0)
 {
 	DataInterp::LoadData(1, serv->GetBufferOptions().GetMaxDataSize() - MSG_OFFSET); //calculate exact amount of data that can be processed without allocating additional memory
 	tempFileMap.Create(NEWDATANAME, Algorithm::GetOutSize(DataInterp::GetFileSize()), CREATE_ALWAYS);
 
 	fileSend.Initialize(ALGORITHMPATH, FileMisc::GetFileNameList(ALGORITHMPATH, 0, false));
-	threadPool.Initialize(&Server::WorkThread, this);
+	//threadPool.Initialize(&Server::WorkThread, this);
 }
 Server::~Server()
 {
@@ -133,18 +134,11 @@ bool Server::GiveNewWork(BuffAllocator* alloc, ClientData* clint)
 	{
 		serv->SendClientData(sndBuff, 0, nullptr, true); //free the buffer since it will no longer be used
 
-		if (DataInterp::ORDERED && workMap.Empty() && oldWork.empty() && ++reorderCounter == 1)
-		{
-			_tprintf(_T("All data received; reordering...\n"));
-			tempFileMap.ReorderFileData();
+		while (DataInterp::ORDERED && !(workMap.Empty() && oldWork.empty()))
+			Sleep(1);
 
-			_tprintf(_T("Data reordered; verifing...\n"));
-			const bool verified = Server::VerifyNewData(NEWDATANAME, DATANAME);
-			if (verified)
-				_tprintf(_T("Data Verified\n"));
-			else
-				_tprintf(_T("Data not verified\n"));
-		}
+		if(++reorderCounter == 1)
+			OnCompletion();
 
 		return false;
 	}
@@ -168,6 +162,37 @@ void Server::GiveOldWork(BuffAllocator* alloc, ClientData* clint, const WorkInfo
 
 	if (serv->SendClientData(sndBuff, buffSize, clint, true))
 		workMap.Remove(clint);
+}
+
+
+void Server::OnCompletion()
+{
+	TimePoint endTime = Clock::now();
+	const float processTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	_tprintf(_T("Time taken to process: %.5f\n"), processTime);
+	startTime = endTime;
+
+	_tprintf(_T("All data received; reordering...\n"));
+	tempFileMap.ReorderFileData();
+
+	endTime = Clock::now();
+	const float reorderTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	_tprintf(_T("Time taken to reorder data:  %.5f\n"), reorderTime);
+	startTime = endTime;
+
+	_tprintf(_T("FINAL TIME = processTime + reorderTime, taken to verify data:  %.5f\n"), processTime + reorderTime);
+
+	_tprintf(_T("Data reordered; verifing...\n"));
+	const bool verified = Server::VerifyNewData(NEWDATANAME, DATANAME);
+	endTime = Clock::now();
+
+	if (verified)
+		_tprintf(_T("Data Verified\n"));
+	else
+		_tprintf(_T("Data not verified\n"));
+
+	const float verifyTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	_tprintf(_T("Time taken to verify data:  %.5f\n"), verifyTime);
 }
 
 void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamReader streamReader)
@@ -207,14 +232,14 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 	case TYPE_READY:
 		switch (msg)
 		{
-			case MSG_READY_INITIALIZED:
-			{
-				serv.fileSend.SendFileList(clint);
-			}
-			break;
 			case MSG_READY_PROCESS:
 			{
 				serv.clntQueue.AddClient(clint);
+				if (++serv.nReady >= Server::MAXCLIENTS)
+				{
+					serv.threadPool.Initialize(&Server::WorkThread, &serv);
+					serv.startTime = Clock::now();
+				}
 			}
 			break;
 		}
@@ -222,6 +247,11 @@ void MsgHandler(TCPServInterface& tcpServ, ClientData* const clint, MsgStreamRea
 	case TYPE_FILETRANSFER:
 		switch (msg)
 		{
+			case MSG_FILETRANSFER_LIST:
+			{
+				serv.fileSend.SendFileList(clint);
+			}
+			break;
 			case MSG_FILETRANSFER_SEND:
 			{
 				serv.fileSend.QueueSend(clint);
@@ -241,6 +271,8 @@ void DisconnectHandler(TCPServInterface& tcpServ, ClientData* clint, bool unexpe
 	WorkInfo wi;
 	if (serv.workMap.GetClientWork(clint, wi))
 		serv.oldWork.push(wi);
+
+	--serv.nReady;
 }
 
 void ConnectHandler(TCPServInterface& tcpServ, ClientData* clint)

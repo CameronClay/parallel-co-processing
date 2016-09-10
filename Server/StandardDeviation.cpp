@@ -33,9 +33,11 @@ auto StandardDeviation::Calculate(float result) -> CalcData
 
 		times.clear();
 	}
+
+	CalcData cd{ mean, sd };
 	lock.unlock();
 
-	return { mean, sd };
+	return cd;
 }
 
 uint32_t StandardDeviation::GetMaxResults()
