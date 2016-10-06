@@ -1,8 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <FileMappingChunkRW.h>
-#include <unordered_map>
-#include <vector>
+#include <set>
 #include <algorithm>
 #include <GlobOps.h>
 #include <Includes.h>
@@ -23,8 +22,12 @@ public:
 	template<typename T>
 	void Write(uint32_t index, T* t, size_t size)
 	{
-		auto it = std::upper_bound(indices.begin(), indices.end(), index, &IndexEntry::Less);
-		indices.emplace(it, index, GetWritePos(), size);
+		auto it = std::upper_bound(indices.begin(), indices.end(), index, [](uint32_t index, const IndexEntry& rhs) 
+		{
+			return index < rhs.index;
+		});
+
+		indices.emplace(it->index, GetWritePos(), size);
 
 		__super::Write(t, size);
 	}
@@ -33,10 +36,10 @@ public:
 	{
 		const uint64_t curPos = GetWritePos();
 		FileMappingChunkRW mp{ _T("TempData.dat"), curPos, CREATE_ALWAYS };
-		for (auto it = indices.begin(), end = indices.end(); it != end; ++it)
-		{
-			mp.Write(*this, it->pos, it->size);
-		}
+
+		for (auto& it : indices)
+			mp.Write(*this, it.pos, it.size);
+
 		mp.Close();
 		Close();
 
@@ -54,15 +57,22 @@ private:
 			size(size)
 		{}
 
-		static inline bool Less(uint32_t index, const IndexEntry& rhs)
+		bool operator<(IndexEntry& entry) const noexcept
 		{
-			return index < rhs.index;
+			return index < entry.index;
 		}
 
 		uint32_t index = 0;
 		uint64_t pos = 0;
 		size_t size = 0;
 	};
+	struct Compare
+	{
+		bool operator()(const IndexEntry& lhs, const IndexEntry& rhs) const noexcept
+		{
+			return lhs.index < rhs.index;
+		}
+	};
 
-	std::list<IndexEntry> indices;
+	std::set<IndexEntry, Compare> indices;
 };

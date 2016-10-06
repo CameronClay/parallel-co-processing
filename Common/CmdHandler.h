@@ -49,7 +49,7 @@ public:
 private:
 	struct StrCompare
 	{
-		bool operator()(const TCHAR* lhs, const TCHAR* rhs) const
+		bool operator()(const TCHAR* lhs, const TCHAR* rhs) const noexcept
 		{
 			return _tcscmp(lhs, rhs) < 0;
 		}
