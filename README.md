@@ -18,7 +18,6 @@ Server> allowcon -h
 Usage: -p=Port [-ipv=ipv4/ipv6/ipboth[ipv4] -nt=nThreads[8] -nct=nConcurrentThreads[4] -nca=nConcurrentAccepts[4]]
 
 #### Client usage
-Client> help
 Commands: help, exit, connect, disconnect, recvdata
 Client> connect -h
 Usage: -ip=IP address -p=port -ipv6=true/false[false] [-t=timesec[5.0]]
