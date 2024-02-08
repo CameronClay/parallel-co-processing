@@ -4,6 +4,9 @@
 #include <MsgHeader.h>
 #include <Algorithm.h>
 
+void MsgHandler(TCPClientInterface& tcpClient, MsgStreamReader streamReader);
+void DisconnectHandler(TCPClientInterface& tcpClient, bool unexpected);
+
 Client::Client(uint32_t nClients, uint64_t buffSize)
 	:
 	nClients(nClients),

@@ -1,5 +1,3 @@
-//Copyright (c) <2015> <Cameron Clay>
-
 #pragma once
 #include "Typedefs.h"
 
@@ -44,7 +42,7 @@ namespace FileMisc
 	struct CAMSNETLIB FileData
 	{
 		FileData();
-		FileData(std::tstring fileName, SYSTEMTIME dateModified, DWORD64 size);
+		FileData(const std::tstring& fileName, SYSTEMTIME dateModified, DWORD64 size);
 		FileData(const FileData& fd);
 		FileData(FileData&& fd);
 

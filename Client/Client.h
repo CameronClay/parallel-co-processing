@@ -20,6 +20,6 @@ private:
 	std::unique_ptr<TCPClientInterface*[]> clints;
 	FileReceive fileReceive;
 
-	friend static void MsgHandler(TCPClientInterface& client, MsgStreamReader streamReader);
-	friend static void DisconnectHandler(TCPClientInterface& client, bool unexpected);
+	friend void MsgHandler(TCPClientInterface& client, MsgStreamReader streamReader);
+	friend void DisconnectHandler(TCPClientInterface& client, bool unexpected);
 };

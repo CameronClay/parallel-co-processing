@@ -32,7 +32,7 @@ public:
 	{
 		return threadCount;
 	}
-	ThreadPool(ThreadPool&& threadPool)
+	ThreadPool(ThreadPool&& threadPool) noexcept
 		:
 		threads(std::move(threadPool.threads)),
 		threadCount(threadPool.threadCount)

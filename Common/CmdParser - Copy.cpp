@@ -1,6 +1,8 @@
 #include "CmdParser.h"
 
-CmdParser::ParamData::ParamData(TCHAR* param, TCHAR* data)
+std::wregex CmdParser::RE_CMD{ _T(R"(\w* (-.+ ?.*)"), std::regex_constants::optimize | std::regex_constants::match_continuous };
+
+CmdParser::ParamData::ParamData(const std::tstring& param, const std::tstring& data)
 	:
 	param(param),
 	data(data)
@@ -62,7 +64,7 @@ const TCHAR* CmdParser::GetCmd() const
 {
 	return cmd;
 }
-const std::vector<CmdParser::ParamData>& CmdParser::GetArgs() const
+const std::vector<CmdParser::ParamData> CmdParser::GetArgs() const
 {
 	return args;
 }

@@ -1,9 +1,8 @@
-//Copyright (c) <2015> <Cameron Clay>
-
 #pragma once
 #include "HeapAlloc.h"
 #include "Messages.h"
 #include "CNLIB/BuffSendInfo.h"
+#include <cstddef>
 
 class MsgStream
 {
@@ -12,7 +11,8 @@ public:
 		:
 		begin(data),
 		end(data + capacity + MSG_OFFSET),
-		data(data + MSG_OFFSET)
+		data(data + MSG_OFFSET),
+		capacity(capacity)
 	{}
 	MsgStream(MsgStream&& stream)
 		:
@@ -32,17 +32,17 @@ public:
 		return *((short*)begin + 1);
 	}
 
-	UINT GetSize() const
+	std::size_t GetSize() const
 	{
 		return end - begin;
 	}
-	UINT GetDataSize() const
+	std::size_t GetDataSize() const
 	{
 		//size without MSG_OFFSET
 		return end - (begin + MSG_OFFSET);
 	}
 
-	template<typename T> std::enable_if_t<std::is_arithmetic<T>::value, T> operator[](UINT index) const
+	template<typename T> std::enable_if_t<std::is_arithmetic<T>::value, T> operator[](std::size_t index) const
 	{
 		assert(index <= capacity - MSG_OFFSET);
 		return begin[index + MSG_OFFSET];
@@ -56,9 +56,10 @@ public:
 protected:
 	const char* begin, *end;
 	char* data;
+	std::size_t capacity;
 };
 
-typedef class MsgStreamWriter : public MsgStream
+class MsgStreamWriter : public MsgStream
 {
 public:
 	//capacity not including MSG_OFFSET
@@ -80,7 +81,6 @@ public:
 	{
 		return begin;
 	}
-
 
 	template<typename T> void Write(const T& t)
 	{
@@ -108,29 +108,29 @@ public:
 		return (char*)begin;
 	}
 
-	UINT GetSize() const
+	std::size_t GetSize() const
 	{
 		return data - begin;
 	}
-	UINT GetDataSize() const
+	std::size_t GetDataSize() const
 	{
 		//size without MSG_OFFSET
 		return data - (begin + MSG_OFFSET);
 	}
 
-	//no constexpr in vs13 :(
-	template<typename... T>
-	static inline UINT SizeType()
+    template<typename... Ts>
+	static inline constexpr std::size_t SizeType()
 	{
-		return TypeSize<T...>::value;
+        return (sizeof(Ts) + ...);
 	}
 
-	template<typename... T>
-	static UINT SizeType(const T&... t)
+    template<typename... Ts>
+    static constexpr std::size_t SizeType(const Ts&... ts)
 	{
-		UINT size = 0;
-		for (auto& a : { Helper<T>::SizeType(t)... })
+		std::size_t size = 0;
+        for (auto& a : { Helper<Ts>::SizeType(ts)... }) {
 			size += a;
+		}
 		return size;
 	}
 
@@ -141,12 +141,6 @@ public:
 
 private:
 	BuffSendInfo buffSendInfo;
-
-	template<typename T, typename... V>
-	struct TypeSize : std::integral_constant<UINT, TypeSize<T>::value + TypeSize<V...>::value>{};
-	template<typename T>
-	struct TypeSize<T> : std::integral_constant<UINT, sizeof(T)>
-	{ static_assert(std::is_arithmetic<T>::value, "cannot call SizeType<T...>() with a non-arithmetic type"); };
 
 	template<typename T> class HelpBase
 	{
@@ -164,37 +158,38 @@ private:
 	public:
 		Helper(MsgStreamWriter& stream)
 			:
-			HelpBase(stream)
+			HelpBase<T>(stream)
 		{}
 
 		void Write(const T& t)
 		{
-			*(T*)(stream.data) = t;
-			stream.data += sizeof(T);
-			assert(stream.data <= stream.end);
+			*(T*)(this->stream.data) = t;
+			this->stream.data += sizeof(T);
+			assert(this->stream.data <= this->stream.end);
 		}
 		void Write(T* t, UINT count)
 		{
 			const UINT nBytes = count * sizeof(T);
-			memcpy(stream.data, t, nBytes);
-			stream.data += nBytes;
-			assert(stream.data <= stream.end);
+			memcpy(this->stream.data, t, nBytes);
+			this->stream.data += nBytes;
+			assert(this->stream.data <= this->stream.end);
 		}
 		void WriteEnd(T* t)
 		{
-			const UINT nBytes = stream.end - stream.data;
-			memcpy(stream.data, t, nBytes);
-			stream.data += nBytes;
-			assert(stream.data <= stream.end);
+			const UINT nBytes = this->stream.end - this->stream.data;
+			memcpy(this->stream.data, t, nBytes);
+			this->stream.data += nBytes;
+			assert(this->stream.data <= this->stream.end);
 		}
-		static UINT SizeType(const T&)
+		static constexpr std::size_t SizeType(const T&)
 		{
 			return sizeof(T);
 		}
 	};
-} StreamWriter;
+};
+using StreamWriter = MsgStreamWriter;
 
-typedef class MsgStreamReader : public MsgStream
+class MsgStreamReader : public MsgStream
 {
 public:
 	MsgStreamReader(char* data, UINT capacity)
@@ -231,7 +226,7 @@ public:
 	}
 
 	template<typename T> 
-	std::enable_if_t<std::is_arithmetic<T>::value, T>* Read(UINT count)
+	std::enable_if_t<std::is_arithmetic<T>::value, T>* Read(std::size_t count)
 	{
 		return Helper<T>(*this).Read(count);
 	}
@@ -257,36 +252,37 @@ private:
 	public:
 		Helper(MsgStreamReader& stream)
 			:
-			HelpBase(stream)
+			HelpBase<T>(stream)
 		{}
 
 		T Read()
 		{
-			T t = *(T*)stream.data;
-			stream.data += sizeof(T);
-			assert(stream.data <= stream.end);
+			T t = *(T*)this->stream.data;
+			this->stream.data += sizeof(T);
+			assert(this->stream.data <= this->stream.end);
 
 			return t;
 		}
 		T* Read(UINT count)
 		{
 			const UINT nBytes = count * sizeof(T);
-			T* t = (T*)(stream.data);
-			stream.data += nBytes;
-			assert(stream.data <= stream.end);
+			T* t = (T*)(this->stream.data);
+			this->stream.data += nBytes;
+			assert(this->stream.data <= this->stream.end);
 
 			return t;
 		}
 		T* ReadEnd()
 		{
-			const UINT nBytes = stream.end - stream.data;
-			T* t = (T*)(stream.data);
-			stream.data += nBytes;
-			assert(stream.data <= stream.end);
+			const UINT nBytes = this->stream.end - this->stream.data;
+			T* t = (T*)(this->stream.data);
+			this->stream.data += nBytes;
+			assert(this->stream.data <= this->stream.end);
 
 			return t;
 		}
 	};
-} StreamReader;
+};
+using StreamReader = MsgStreamReader;
 
 #include "StreamExt.h"

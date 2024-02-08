@@ -17,7 +17,7 @@ void ParamParser::Parse(const CmdParser& cmdParser)
 {
 	DefaultParams();
 
-	for (auto& arg : cmdParser.GetArgs())
+	for (const auto& arg : cmdParser.GetArgs())
 	{
 		if (_tcscmp(arg.param, _T("h")) == 0 || _tcscmp(arg.param, _T("?")) == 0)
 		{

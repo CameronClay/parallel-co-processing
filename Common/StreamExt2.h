@@ -7,16 +7,16 @@ template<>
 class StreamWriter::Helper<FileMisc::FileData> : public HelpBase<FileMisc::FileData>
 {
 public:
-	Helper(StreamWriter& stream) : HelpBase(stream) {}
+	Helper(StreamWriter& stream) : HelpBase<FileMisc::FileData>(stream) {}
 	void Write(const FileMisc::FileData& t)
 	{
 		stream.Write(t.fileName);
 		stream.Write(t.dateModified);
 		stream.Write(t.size);
 	}
-	static UINT SizeType(const FileMisc::FileData& t)
+	static constexpr std::size_t SizeType(const FileMisc::FileData& t)
 	{
-		return StreamWriter::SizeType(t.fileName) + sizeof(SYSTEMTIME) + sizeof(DWORD64);
+		return Helper<std::tstring>::SizeType(t.fileName) + sizeof(SYSTEMTIME) + sizeof(DWORD64);
 	}
 };
 
@@ -24,7 +24,7 @@ template<>
 class StreamReader::Helper<FileMisc::FileData> : public HelpBase<FileMisc::FileData>
 {
 public:
-	Helper(StreamReader& stream) : HelpBase(stream) {}
+	Helper(StreamReader& stream) : HelpBase<FileMisc::FileData>(stream) {}
 	FileMisc::FileData Read()
 	{
 		FileMisc::FileData fd;
