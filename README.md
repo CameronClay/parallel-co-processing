@@ -1,5 +1,5 @@
 # About
-This is a Distributed Data Processing application (Windows only) that utilizes multiple computers to execute an algorithm on a bunch of data. The clients will then send the processsed data back to the server so it can be reordered and combined. This speeds up the processing and analysis of data drastically over using a single computer.  
+Distributed Data Processing application (Windows only) that utilizes multiple computers to execute an algorithm on a set of data. The clients will then send the processsed data back to the server so it can be reordered and combined. This speeds up the processing and analysis of data drastically over using a single computer.  
 
 Custom algorithms and custom data can be created/generated for the clients to process/anyalze.
 
