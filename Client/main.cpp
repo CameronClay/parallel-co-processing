@@ -17,7 +17,7 @@
 #define CONF "Release"
 #endif
 #if defined _X86_
-#define ARCH "x32"
+#define ARCH "x86"
 #elif defined _AMD64_
 #define ARCH "x64"
 #endif
