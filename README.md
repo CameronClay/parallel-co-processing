@@ -14,11 +14,15 @@ Custom algorithms and custom data can be created/generated for the clients to pr
 ### Dependencies
 - WNLIB - https://github.com/CameronClay/WNLIB-Chat
 
+### Unit Testing
+Unit testing done with Google Test.
+
 ### Tooling
 - C++
 - Boost.LockFree
 - Google Test
 - Win32 API
+- Visual Studio
 
 #### Server usage
 Commands: help, exit, allowcon, shutdown  
