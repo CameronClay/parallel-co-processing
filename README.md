@@ -15,7 +15,7 @@ Custom algorithms and custom data can be created/generated for the clients to pr
 - WNLIB - https://github.com/CameronClay/WNLIB-Chat
 
 ### Unit Testing
-Unit testing done with Google Test.
+- Unit testing done with Google Test.
 
 ### Tooling
 - C++
