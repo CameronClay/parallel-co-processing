@@ -25,16 +25,20 @@ Unit testing done with Google Test.
 - Visual Studio
 
 #### Server usage
+```
 Commands: help, exit, allowcon, shutdown  
 Server> allowcon -h  
-Usage: -p=Port [-ipv=ipv4/ipv6/ipboth[ipv4] -nt=nThreads[8] -nct=nConcurrentThreads[4] -nca=nConcurrentAccepts[4]]  
+Usage: -p=Port [-ipv=ipv4/ipv6/ipboth[ipv4] -nt=nThreads[8] -nct=nConcurrentThreads[4] -nca=nConcurrentAccepts[4]]
+```
 
 #### Client usage
+```
 Commands: help, exit, connect, disconnect, recvdata  
 Client> connect -h  
 Usage: -ip=IP address -p=port -ipv6=true/false[false] [-t=timesec[5.0]]  
 Client> recvdata -h  
 Usage: [-nt=nThreads[2] -nct=nConcThreads[1]]  
+```
 
 ##### Disclamer
 Use at own risk. NO warranty is provided whatsoever.
