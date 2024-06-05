@@ -4,7 +4,7 @@ Distributed Data Processing application (Windows only) that utilizes multiple co
 Custom algorithms and custom data can be created/generated for the clients to process/anyalze.
 
 ### Setup
-* Make sure TCPCS.dll, TCPCS.lib, zlib1.dll are all in the executable directory before running (can run symlink.cmd for this)
+* Make sure TCPCS.dll, TCPCS.lib, zlib1.dll are all in the executable directory before running.
 * Run DataGen to generate data for the clients to process
 * Start the server
 * Allow connections on the server
